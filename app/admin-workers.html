@@ -1,0 +1,248 @@
+<div class="management-btn">
+  <input type="checkbox" class="option-input hidden" id="selectAll" (click)="selectAllId()" [checked]="isCheckedAll">
+
+  <i class="material-icons text-primary"  (click)="selectAllId()" *ngIf="isCheckedAll">&#xE86C;</i>
+  <i class="fa fa-circle-thin selectoff" (click)="selectAllId()" *ngIf="!isCheckedAll"></i>
+  <label for="selectAll">Select All</label>
+
+  <a (click)="deleteWorker()"><i class="fa fa-trash"></i> Delete</a>
+
+  <a (click)="downloadCSV()"><i class="fa fa-exchange export"></i> Export</a>
+
+  <a (click)="showForm()" data-toggle="modal" data-target="#addEmpModal"><i class="fa fa-plus"></i> Add Employee</a>
+
+  <a ><i class="fa fa-plus"></i> Upload Employees</a>
+
+  <form class="form-inline pull-right hidden-xs">
+    <div class="control-group">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="searchWorker" name="search" placeholder="Search for Employee">
+      
+    </div>
+  </form>
+</div>
+
+<form class="form-inline visible-xs">
+    <div class="group search">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="searchWorker" name="search" placeholder="Search for Employee">
+      <span class="bar"></span>
+    </div>
+</form>
+
+<div class="modal fade" id="addEmpModal" role="dialog">
+  <div class="modal-dialog small-modal">
+    <div class="modal-content">
+    <div *ngIf="loader" class="loader"></div>
+     <!--  <div class="modal-header">
+        <b>Add Employee</b>
+      </div> -->
+      <div class="modal-body" *ngIf="!loader">
+      <div class="alert alert-danger" *ngIf="validEmail">
+        {{validEmail}}
+      </div>
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        {{errorMessage}}
+      </div>
+      <form class="" *ngIf="workerForm" >
+         <div class="group">
+          <!-- <label for="name">First Name</label> &nbsp; -->
+          <input type="text" placeholder="FIRST NAME" class="mtl-input" [(ngModel)]="f_name" name="f_name" required>
+          <span class="bar"></span>
+        </div> 
+        
+
+        <div class="group">
+          <!-- <label for="name">Last Name</label> &nbsp; -->
+          <input type="text" placeholder="LAST NAME" class="mtl-input" [(ngModel)]="l_name" name="l_name" required>
+          <span class="bar"></span>
+        </div> 
+
+        <div class="group">
+          <!-- <label for="email">Email</label> &nbsp; -->
+          <input type="email" placeholder="EMAIL" class="mtl-input" [(ngModel)]="email" name="email" required>
+          <span class="bar"></span>
+        </div> 
+
+        <!-- <div class="group">
+          <label for="password">Password</label> &nbsp;
+          <input type="password" class="mtl-input" [(ngModel)]="password" name="password" >
+          <span class="bar"></span>
+        </div>  -->
+        <!-- <div class="group" *ngIf="user.user_type == 'worker'">
+        <label for="department">DEPARTMENT</label> &nbsp;
+         <select class="mtl-select" [(ngModel)]="hotel_department" name="hotel_department" >
+          <option *ngFor="let w of worker.hotel_department" value="{{w}}">{{w}}</option>
+        </select> 
+        </div> -->
+        <div class="group"  *ngIf="user.user_type == 'admin'">
+        <!-- <label for="hotel">HOTEL</label> &nbsp; -->
+         <select class="mtl-select" [(ngModel)]="hotel_data" name="hotel_data" (ngModelChange)="select_hotel($event)">
+          <option [ngValue]="none" disabled selected>HOTEL</option>
+          <option *ngFor="let hotel of hotels" [ngValue]="hotel">{{hotel.name}}</option>
+        </select> 
+        </div>
+        <div class="group"  *ngIf="hotel_data">
+        <!-- <label for="hotel">DEPARTMENT</label> &nbsp; -->
+         <select class="mtl-select" [(ngModel)]="dept_selected" name="dept_selected" >
+          <option [ngValue]="none" disabled selected>DEPARTMENT</option>
+          <option *ngFor="let dept of hotel_data.departments" value="{{dept}}">{{dept}}</option>
+        </select> 
+        </div>
+        
+        <!-- <div class="group" *ngIf="user.user_type == 'worker'">
+          Hotel: {{worker.hotel_name}}
+        </div> -->
+
+        <div class="row user_roles">
+        <div class="col-sm-6">
+            <input type="radio" class="hidden" id="manager" name="login_type" value="0" (click)="select_login('0')">&nbsp; &nbsp;
+            <i class="material-icons text-primary" *ngIf="login_type=='0'">&#xE86C;</i>
+            <i class="material-icons" *ngIf="login_type!='0'"(click)="select_login('0')">&#xE40C;</i>
+            <label for="manager">Manager</label>
+         </div>
+         <div class="col-sm-6">
+            <input type="radio" class="hidden" id="emp" name="login_type" value="1" (click)="select_login('1')">&nbsp; &nbsp;
+            <i class="material-icons text-primary" *ngIf="login_type=='1'">&#xE86C;</i>
+            <i class="material-icons" *ngIf="login_type!='1'"(click)="select_login('1')">&#xE40C;</i>
+            <label for="emp">Employee</label>
+        </div>
+        </div>
+       <!--  <button type="submit" class="btn btn-default" *ngIf="user.user_type=='worker'" (click)="submitWorker()">Submit</button> -->
+        <button type="submit" class="btn btn-default" *ngIf="user.user_type=='admin'" (click)="submitAdminWorker()">Submit</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table class = "table table-striped green-table">
+   
+   <thead>
+      <tr>
+         <th></th>
+         <th>Employee</th>
+         <th>Location</th>
+         <th>Role</th>
+         <th>Account Activity</th>
+         <th>QR Code</th>
+         <th>Status</th>
+      </tr>
+   </thead>
+   <div *ngIf="loader" class="loader"></div>
+   <tbody *ngIf="!loader">
+      <tr *ngFor="let worker of pagedItems | myfilter : searchWorker">
+         <td>
+             <input type="checkbox" class="option-input hidden" name="select" id="{{worker.id}}" 
+           (click)="selectId(worker.id)" value="{{worker.id}}" [checked]="isChecked(worker.id)">
+
+           <i class="material-icons text-primary" (click)="selectId(worker.id)" *ngIf="isChecked(worker.id)">&#xE86C;</i>
+
+            <i class="fa fa-circle-thin selectoff" (click)="selectId(worker.id)" *ngIf="!isChecked(worker.id)"></i>
+         </td>
+         <td (click)="showUpdateForm(worker.id)" data-toggle="modal" data-target="#updateEmpModal" class="worker-modal">{{worker.name}}</td>
+         <td>{{worker.hotel_name}}</td>
+         <td>{{worker.department}}</td>
+         <td>{{worker.activity}}</td>
+         <td>
+         <a [attr.href]="'http://13.59.184.105:9000/qr/' + worker.email + '/' + worker.name" *ngIf="worker.password">Download QR Code</a>
+
+          <p *ngIf="!worker.password">Not Available</p>
+         </td>
+         <!-- <td *ngIf="worker.status == 1">
+         <span class="glyphicon glyphicon-ok-circle" ></span> Active
+         </td>
+         <td  *ngIf="worker.status == 0">
+         <span class="glyphicon glyphicon-ok-circle" ng-if="worker.status == 0"></span> Inactive
+         </td> -->
+         <td class="status">
+         <i class="fa fa-circle status-indicator" *ngIf="worker.status == 1"></i>
+         <i class="fa fa-circle-o status-indicator" *ngIf="worker.status == 0"></i>
+           <select class="mtl-select status-dropdown" [(ngModel)]="worker.status" (change)="updateWorker(worker.id,worker.status)">
+             <option value="0">Inactive</option>
+             <option value="1">Active</option>
+           </select>
+         </td>
+      </tr>
+
+
+
+   </tbody>
+   
+</table>
+
+
+<div class="modal fade" id="updateEmpModal" role="dialog">
+  <div class="modal-dialog small-modal">
+    <div class="modal-content">
+    <div *ngIf="loader" class="loader"></div>
+     <!--  <div class="modal-header">
+        <b>Add Employee</b>
+      </div> -->
+      <div class="modal-body" *ngIf="!loader">
+      
+      <form class="" *ngIf="updateForm && worker" >
+        <div class="alert alert-success" *ngIf="send_success">
+          {{send_success}}
+        </div>
+         <div class="group">
+          <!-- <label for="name">First Name</label> &nbsp; -->
+          <input type="text" class="mtl-input" [(ngModel)]="worker.name" name="name">
+          <span class="bar"></span>
+        </div> 
+
+        <div class="group">
+          <!-- <label for="email">Email</label> &nbsp; -->
+          <input type="email" placeholder="EMAIL" class="mtl-input" [(ngModel)]="worker.email" name="email" >
+          <span class="bar"></span>
+        </div> 
+
+        
+        <div class="group">
+         <select class="mtl-select" [(ngModel)]="worker.department" name="hotel_data">
+          <option *ngFor="let dept of worker.hotel_department" [ngValue]="dept">{{dept}}</option>
+        </select> 
+        </div>
+
+        <div class="group">
+         <select class="mtl-select" [(ngModel)]="worker.status" name="status">
+          <option [ngValue]="0">Inactive account</option>
+          <option [ngValue]="1">Active account</option>
+        </select> 
+        </div>
+        
+        <div class="resend_link">
+          <a (click)="resend_account_link()">Resend account creation email</a>
+        </div>
+        
+        <div class="worker-submit">
+          <button type="submit" class="btn btn-default" (click)="updateWorkerInfo()">Save Changes</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(1)">First</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+    </li>
+    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+        <a (click)="setPage(page)">{{page}}</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.totalPages)">Last</a>
+    </li>
+</ul>
+
+<!--<p *ngIf="!auth.authenticated()">Log In to Get Access to a Secured Ping</p>
+<button class="btn btn-primary" (click)="ping()">Ping</button>
+<button class="btn btn-primary" (click)="securedPing()" *ngIf="auth.authenticated()">Secured Ping</button>
+<h2>{{message}}</h2>-->

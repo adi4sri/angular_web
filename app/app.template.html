@@ -1,0 +1,131 @@
+<main class="" >
+
+  <div [ngClass]="{'main-content':!auth.authenticated() || !navbar}" id="main">
+    <nav class="navbar  navbar-inverse" *ngIf="auth.authenticated() && navbar" >
+          <span id="menu-opener" class="menu-opener" onclick="openNav()">&#9776;</span>
+          <span id="close-btn" class="menu-opener" href="javascript:void(0)"  onclick="closeNav()">&#9776;</span>
+          <span *ngIf="auth.authenticated() && user" class="pull-right user dropdown-toggle" data-toggle="dropdown" href="#">
+            {{user.name}}<i class="fa fa-angle-down"></i>
+          </span>
+          <ul class="dropdown-menu pull-right">
+            <li *ngIf="!view_hotel_mode && user">
+              <a href="#" *ngIf="user.user_type=='worker'" [routerLink]="['/settings']">Profile</a>
+              <a href="#" *ngIf="user.user_type=='admin'" [routerLink]="['/admin_settings']">Profile</a>
+            </li>
+            <li><a href="#" (click)="logoutUser()">Signout</a></li>
+          </ul>
+    </nav>
+    <div class="view_hotel" *ngIf="view_hotel_mode">
+  View as hotel mode activated! <a (click)="view_admin()">Click here</a> to go back to admin dashboard.
+</div>
+    <div id="overlay" onclick="closeNav()" [ngClass]="{'hidden':!auth.authenticated() || !navbar}"></div>
+    <router-outlet></router-outlet>
+  </div>
+
+<!--Side Bar -->
+<div id="mySidenav" class="sidenav" *ngIf="auth.authenticated() && navbar ">
+<a class="closebtn" href="javascript:void(0)"  onclick="closeNav()">x</a>
+  <h3 class="logo">bTIPt</h3>
+  <h4 class="logo heading">simple tipping</h4>
+    <p class="welcome-message text-center"  *ngIf="auth.authenticated() && user">
+       Welcome, {{user.name}}!
+    </p>
+    <ul class="nav nav-sidebar" *ngIf="user">
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/home']"  *ngIf="auth.authenticated()  && user.user_type=='worker'">
+          <i class="fa fa-home"></i> Dashboard<span class="sr-only">(current)</span>
+        </a>
+      </li>
+
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/hotels']"  *ngIf="auth.authenticated() && user.user_type=='admin' && (user.login_type=='0' || role.location==true)">
+          <i class="fa fa-bed"></i> Locations
+        </a>
+      </li>
+
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/admin-workers']"  *ngIf="auth.authenticated() && user.user_type=='admin' && (user.login_type=='0' || role.admin_employees==true)">
+          <i class="fa fa-user-plus"></i> Employees
+        </a>
+      </li>
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/workers']"  *ngIf="auth.authenticated() && user.user_type=='worker' && (user.login_type=='0' || role.worker_employees==true)">
+          <i class="fa fa-user-plus"></i> Employees
+        </a>
+      </li>
+
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/tippers']"  *ngIf="auth.authenticated() && user.user_type=='admin' && (user.login_type=='0' || role.tip_center==true)">
+          <i class="fa fa-user-plus"></i> Tippers
+        </a>
+      </li>
+      
+      <li>
+        <a data-toggle="collapse" data-target="#tips"  *ngIf="auth.authenticated() && user.user_type=='worker' && user.login_type=='0' ">
+          <i class="fa fa-money"></i> Tip Center <i class="menu-arrow fa fa-angle-down"></i>
+        </a>
+        <ul id="tips" class="collapse">
+          <li [routerLinkActive]="['active']">
+            <a href="#" [routerLink]="['/tip_comparison']"  *ngIf="auth.authenticated() && user.login_type=='0'">
+              Tip Comparison
+            </a>
+          </li>
+          <li [routerLinkActive]="['active']">
+            <a href="#" [routerLink]="['/employee_tips']"  *ngIf="auth.authenticated() && user.login_type=='0'">
+              Tips by Employee
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <a data-toggle="collapse" data-target="#wtips"  *ngIf="auth.authenticated() && user.user_type=='worker' && user.login_type=='1' && (role.tip_employee==true || role.tip_comparison==true)">
+          <i class="fa fa-money"></i> Tip Center <i class="menu-arrow fa fa-angle-down"></i>
+        </a>
+        <ul id="wtips" class="collapse">
+          <li [routerLinkActive]="['active']">
+            <a href="#" [routerLink]="['/worker_tip_comparison']"  *ngIf="(auth.authenticated() && user.login_type=='1') && role.tip_comparison==true">
+              Tip Comparison
+            </a>
+          </li>
+          <li [routerLinkActive]="['active']">
+            <a href="#" [routerLink]="['/worker_tips']"  *ngIf="(auth.authenticated() && user.login_type=='1') && role.tip_employee==true">
+              Tips by Employee
+            </a>
+          </li>
+        </ul>
+      </li>
+      
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/feedback']"  *ngIf="auth.authenticated() && user.user_type=='worker' && (user.login_type=='0' || role.reviews==true)">
+          <i class="fa fa-commenting"></i> Reviews
+        </a>
+      </li>
+
+      <!-- <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/dwolla']"  *ngIf="auth.authenticated() && user.user_type=='admin' ">
+          <i class="fa fa-exchange"></i> Dwolla Transfers
+        </a>
+      </li> -->
+
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/settings']"  *ngIf="(auth.authenticated() && user.user_type=='worker') && !view_hotel_mode">
+          <i class="fa fa-cog"></i> Settings
+        </a>
+      </li>
+
+      <li [routerLinkActive]="['active']">
+        <a href="#" [routerLink]="['/admin_settings']"  *ngIf="auth.authenticated() && user.user_type=='admin' && (user.login_type=='0' || role.setting==true)">
+          <i class="fa fa-cog"></i> Settings
+        </a>
+      </li>
+
+      <li>
+        <a href="#" *ngIf="!auth.authenticated()" [routerLink]="['/login']">
+          <i class="fa fa-sign-in"></i> Login
+        </a>
+      </li>
+    </ul>
+</div>
+
+</main>

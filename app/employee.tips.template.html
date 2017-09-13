@@ -1,0 +1,95 @@
+<br>
+<div class="management-btn">
+<div class="col-sm-4">
+  
+  <i class="material-icons text-primary" (click)="selectAllId()" *ngIf="isCheckedAll">&#xE86C;</i>
+  
+  <i class="fa fa-circle-thin selectoff" (click)="selectAllId()" *ngIf="!isCheckedAll"></i>
+  
+  <input type="checkbox" class="option-input hidden" id="selectAll" (click)="selectAllId()" [checked]="isCheckedAll">
+  <label for="selectAll">Select All</label>
+
+  <a (click)="downloadCSV()"><i class="fa fa-exchange export"></i> Export</a>
+</div>
+<div class="col-sm-4">
+  <my-date-range-picker name="model" [options]="myDateRangePickerOptions"
+  [(ngModel)]="model"
+  (dateRangeChanged)="onDateRangeChanged($event)"
+  (inputFieldChanged)="onInputFieldChanged($event)"
+  placeholder="Select Date Range" 
+  required ></my-date-range-picker>
+</div>
+<div class="col-sm-4">
+  <form class="form-inline pull-right hidden-xs">
+    
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="workerName" name="search" placeholder="Search">
+    
+    
+  </form>
+  </div>
+</div>
+
+<form class="form-inline visible-xs">
+    <div class="control-group">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="workerName" name="search" placeholder="Search">
+      <span class="bar"></span>
+    </div>
+</form>
+
+<table class = "table table-striped green-table">
+   
+   <thead>
+      <tr>
+        <th></th>
+        <th>Date</th>
+        <th>Employee</th>
+        <th>Department</th>
+        <th>Tip</th>
+        <th>Rating</th>
+        <th>Review</th>
+      </tr>
+   </thead>
+   <div class="loader" *ngIf="loader"></div>
+   <tbody *ngIf="!loader">
+      <tr *ngFor="let tip of pagedItems | myfilter : workerName">
+         <td>
+
+            <i class="material-icons text-primary" (click)="selectId(tip.id)" *ngIf="isChecked(tip.id)">&#xE86C;</i>
+
+            <i class="fa fa-circle-thin selectoff" (click)="selectId(tip.id)" *ngIf="!isChecked(tip.id)"></i>
+
+             <input type="checkbox" class="option-input hidden" name="select" id="{{tip.id}}" 
+           (click)="selectId(tip.id)" value="{{tip.id}}" [checked]="isChecked(tip.id)">
+         </td>
+        <td>{{tip.tip_time | date: 'yMd'}}</td>
+        <td>{{tip.name}}</td>
+        <td>{{tip.worker_department}}</td>
+        <td>{{tip.amount}}</td>
+        <td>{{tip.rating}}</td>
+        <td>{{tip.comment}}</td>
+      </tr>
+
+      
+   </tbody>
+   
+</table>
+
+<ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(1)">First</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+    </li>
+    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+        <a (click)="setPage(page)">{{page}}</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.totalPages)">Last</a>
+    </li>
+</ul>

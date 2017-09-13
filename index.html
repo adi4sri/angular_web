@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <base href="/">
+    <title>bTIPt</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="assets/custom.css">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    
+
+    <!-- Auth0 Lock script -->
+    <script src="http://cdn.auth0.com/js/lock/10.7/lock.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+    <script type="text/javascript" src="assets/custom.js"></script>
+    
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Polyfill(s) for older browsers -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+    <script src="node_modules/chart.js/dist/Chart.bundle.js"></script>
+
+
+
+    <script src="systemjs.config.js"></script>
+ <script>
+          System.import('app').catch(function(err){ console.error(err); });
+    </script>
+  </head>
+
+  <body>
+    <my-app>
+        Loading...
+        <div class="loader" style="margin-top:40vh!important;"></div>
+    </my-app>
+  </body>
+</html>

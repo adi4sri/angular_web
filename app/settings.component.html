@@ -1,0 +1,259 @@
+
+<div class="setting">
+	
+  
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#profile">Profile</a></li>
+    <li *ngIf="user.login_type=='1'"><a data-toggle="tab" href="#bank" (click)="getBankInfo()">Bank Info</a></li>
+    <li *ngIf="user.login_type=='0'"><a data-toggle="tab" href="#dept">Departments</a></li>
+    <li *ngIf="user.login_type=='0'"><a data-toggle="tab" href="#user">User Roles</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="profile" class="tab-pane fade in active">
+      <!-- <h3>Profile</h3> -->
+      <h2 class="text-center setting-name"> <b>{{user.name}}</b></h2>
+      <div class="loader" *ngIf="loader"></div>
+      <div class=""  *ngIf="!loader">
+      	<div class="col-sm-6">
+      	<form>
+      		<div class="group">
+	          <label>Email Address</label> &nbsp;
+	          <input type="email" class="mtl-input" required value="{{user.email}}" disabled>
+	          <span class="bar"></span>
+        	</div> 
+      		<h4 class="text-primary margin-top"><b>Change Your Password</b></h4>
+          <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+            {{errorMessage.message}}
+          </div>
+          <div class="alert alert-success" role="alert" *ngIf="success==true">
+            Password Changed Successfully!
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          </div>
+          <div class="alert alert-danger" role="alert" *ngIf="compare_pass == false">
+            Passwords must match!
+          </div>
+      		
+      		<div class="group">
+	      		<label>Current Password </label> &nbsp;
+	      		<input type="password" class="mtl-input" [(ngModel)]="current_pass" name="current_pass" />
+	      		<span class="bar"></span>
+	      	</div>
+
+	      	<div class="group">
+	      		<label>New Password </label> &nbsp;
+	      		<input type="password" class="mtl-input" [(ngModel)]="new_pass" name="new_pass" />
+	      		<span class="bar"></span>
+	      	</div>
+
+	      	<div class="group">
+	      		<label>Retype New Password </label> &nbsp;
+	      		<input type="password" class="mtl-input"  [(ngModel)]="renew_pass" name="renew_pass"/>
+	      		<span class="bar"></span>
+	      	</div>
+
+	      	<div class="form-group">
+	      		<input type="submit" value="Save Changes" (click)="updatePassword()" class="form-control btn-default"/>
+	      	</div>
+	      </form>
+      	</div>
+
+        <div class="col-sm-6 hotel-info">
+      		<p class="setting-hotel">{{worker.hotel_name}}</p>
+      		<p>{{worker.hotel_address}}</p>
+      		<p>{{worker.hotel_city}} </p>
+      	</div>
+      </div>
+    </div>
+    <div id="bank" class="tab-pane fade">
+      
+      <h2 class="text-center">Bank Info</h2>
+      <div class="alert alert-success" *ngIf="success">
+        {{success}}
+      </div>
+      <form  *ngIf="!dept_loader" class="container-fluid">
+       <div class="group" *ngIf="bankInfo">
+            <label>Bank Info</label> &nbsp;
+            <input type="text" class="mtl-input" required value="{{bankInfo}}" disabled>
+            <span class="bar"></span>
+          </div> 
+        
+        </form>
+      
+    </div>
+    <div id="dept" class="tab-pane fade">
+      <div class="loader" *ngIf="dept_loader"></div>
+      <h2 class="text-center">Departments</h2>
+      <div class="alert alert-success" *ngIf="success">
+        {{success}}
+      </div>
+      <form  *ngIf="!dept_loader" class="container-fluid">
+      	<div  *ngFor="let dept of departments; let i = index;   trackBy:trackByFn" class="form-group"> 
+	      <div class="input-group col-sm-6">
+          <input type="text" 
+            class="form-control"  
+            [(ngModel)]="departments[i]"
+            name = "departments-{{[i]}}"
+            required
+          />
+          <div class="input-group-btn">
+            <button class="btn btn-danger" type="submit" (click)="removeDept(i)">
+              <i class="fa fa-minus-circle"></i>
+            </button>
+          </div>
+	      </div>
+	    </div>
+        
+	    <div class="management-btn">
+      		<a class="" (click)="addNewDept()"><i class="fa fa-plus"></i> Add Department</a>
+      	</div>
+      	<div class="">
+	      <div class="form-group col-sm-6">
+      		<input type="submit" value="Save Changes" (click)="addDepartments()" class="form-control btn-default" />
+      	  </div>
+      	</div>
+      	
+      	</form>
+      
+    </div>
+    <div id="user" class="tab-pane fade">
+      <div class="loader" *ngIf="loader"></div>
+      <h2 class="text-center">User Roles</h2>
+      <div class="alert alert-danger" role="alert" *ngIf="errorRole">
+            {{errorRole.message}}
+      </div>
+      <div class="alert alert-success" role="alert" *ngIf="role_success">
+            {{this.role_success}}
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      </div>
+      <div class="user-roles"  *ngIf="!loader">
+      	<div class="col-sm-6">
+      	<h3>Manager</h3>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" checked disabled> 
+                <i class="material-icons text-primary">&#xE86C;</i></td>
+              <td>
+                <label for="man_dash">Dashboard</label><br/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" checked disabled>
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td>
+                  <label for="man_emp">Employees</label><br/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" checked disabled> 
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td>
+                <label for="man_comp">Tip Comparisons</label><br/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" checked disabled> 
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td>
+                <label for="man_tipemp">Tip By Employees</label><br/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" checked disabled> 
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td>
+                <label for="man_rev">Reviews</label><br/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        </div>
+
+      	<div class="col-sm-6" *ngIf="role">
+      	<h3>Employee</h3>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden"  [checked]="role.dashboard" [(ngModel)]="role.dashboard">
+                 <i class="material-icons text-primary" *ngIf="role.dashboard" (click)="role.dashboard=!role.dashboard">&#xE86C;</i>
+                 <i class="fa fa-circle-thin selectoff" *ngIf="!role.dashboard" (click)="role.dashboard=!role.dashboard"></i>      
+              </td>
+              <td>
+                <label for="emp_dash">Dashboard</label><br/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden"  [checked]="role.worker_employees" [(ngModel)]="role.worker_employees">
+               <i class="material-icons text-primary" *ngIf="role.worker_employees" (click)="role.worker_employees=!role.worker_employees">&#xE86C;</i>
+               <i class="fa fa-circle-thin selectoff" *ngIf="!role.worker_employees" (click)="role.worker_employees=!role.worker_employees"></i>
+              </td>
+              <td>
+                <label for="emp_emp">Employees</label><br/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" [checked]="role.tip_comparison" [(ngModel)]="role.tip_comparison">
+          <i class="material-icons text-primary" *ngIf="role.tip_comparison" (click)="role.tip_comparison=!role.tip_comparison">&#xE86C;</i>
+           <i class="fa fa-circle-thin selectoff" *ngIf="!role.tip_comparison" (click)="role.tip_comparison=!role.tip_comparison"></i>
+              </td>
+              <td>
+                <label for="emp_comp">Tip Comparisons</label><br/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" [checked]="role.tip_employee"
+          [(ngModel)]="role.tip_employee">
+          <i class="material-icons text-primary" *ngIf="role.tip_employee" (click)="role.tip_employee=!role.tip_employee">&#xE86C;</i>
+           <i class="fa fa-circle-thin selectoff" *ngIf="!role.tip_employee" (click)="role.tip_employee=!role.tip_employee"></i>
+              </td>
+              <td>
+                <label for="emp_tipemp">Tip By Employees</label><br/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" [checked]="role.reviews"
+          [(ngModel)]="role.reviews"> 
+          <i class="material-icons text-primary" *ngIf="role.reviews" (click)="role.reviews=!role.reviews">&#xE86C;</i>
+           <i class="fa fa-circle-thin selectoff" *ngIf="!role.reviews" (click)="role.reviews=!role.reviews"></i>
+              </td>
+              <td>
+                 <label for="emp_rev">Reviews</label><br/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+         
+     	</div>
+        <div class="col-sm-6 margin-top pull-left">
+          <input type="submit" class="form-control btn-default " (click)="updateRoles()" value="Save Changes"/>
+      </div>
+      </div>
+     
+
+    </div>
+    
+  </div>
+
+
+</div>

@@ -1,0 +1,27 @@
+<br>
+<table class = "table table-striped green-table">
+   
+   <thead>
+      <tr>
+        <th>Id</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th>Currency</th>
+        <th>Created</th>
+      </tr>
+   </thead>
+   <div class="loader" *ngIf="loader"></div>
+   <tbody *ngIf="!loader">
+       
+      <tr *ngFor="let transfer of transfers">
+        <td>{{transfer.id}}</td>
+        <td>{{transfer.status}}</td>
+        <td>{{transfer.amount.value}}</td>
+        <td>{{transfer.amount.currency.toUpperCase()}}</td>
+        <td>{{transfer.created | date: 'dd-MMMM-yyyy'}}</td>
+        <td></td>
+      </tr>
+      
+   </tbody>
+   
+</table>

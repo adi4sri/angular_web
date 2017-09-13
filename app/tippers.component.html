@@ -1,0 +1,60 @@
+<div class="management-btn">
+  <input type="checkbox" class="option-input hidden" id="selectAll" (click)="selectAllId()" [checked]="isCheckedAll">
+  <i class="material-icons text-primary"  (click)="selectAllId()" *ngIf="isCheckedAll">&#xE86C;</i>
+  <i class="fa fa-circle-thin selectoff" (click)="selectAllId()" *ngIf="!isCheckedAll"></i>
+  <label for="selectAll">Select All</label>
+
+  <a (click)="deleteTipper()"><i class="fa fa-trash"></i> Delete</a>
+
+  <a (click)="downloadCSV()"><i class="fa fa-exchange export"></i> Export</a>
+
+</div>
+
+
+<table class = "table table-striped green-table">
+   <thead>
+      <tr>
+         <th></th>
+         <th>Tipper</th>
+         <th>Location</th>
+         <th>Employee</th>
+         <th>Tip Amount</th>
+      </tr>
+   </thead>
+   <div class="loader" *ngIf="loader"></div>
+   <tbody *ngIf="!loader">
+      <tr *ngFor="let tipper of pagedItems">
+         <td>
+             <input type="checkbox" class="option-input hidden" name="select" id="{{tipper.id}}" 
+           (click)="selectId(tipper.id)" value="{{tipper.id}}" [checked]="isChecked(tipper.id)">
+
+            <i class="material-icons text-primary" (click)="selectId(tipper.id)" *ngIf="isChecked(tipper.id)">&#xE86C;</i>
+
+            <i class="fa fa-circle-thin selectoff" (click)="selectId(tipper.id)" *ngIf="!isChecked(tipper.id)"></i>
+         </td>
+         <td>{{tipper.guest_name}}</td>
+         <td>{{tipper.hotel_name}}</td>
+         <td>{{tipper.worker_name}}</td>
+         <td>{{tipper.amount}}</td>
+      </tr>
+   </tbody>
+   
+</table>
+
+<ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(1)">First</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+    </li>
+    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+        <a (click)="setPage(page)">{{page}}</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.totalPages)">Last</a>
+    </li>
+</ul>

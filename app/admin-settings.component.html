@@ -1,0 +1,81 @@
+<div class="settings-container">
+  <div class="alert alert-success" *ngIf="success">{{success}}</div>
+	<div class="panel panel-default margin-top">
+		<div class="panel-heading">
+			<h3 class="margin-remove">Settings</h3>
+		</div>
+		<div class="panel-body">
+			<div class="row settings-padding">
+				
+				<div class="col-sm-6">
+					<a class="settings-link" [routerLink]="['../admin_settingsTab']" fragment="profile" [routerLinkActive]="['active']">Profile</a>
+				</div>
+				
+				<div class="col-sm-6">
+					<a class="settings-link" [routerLink]="['../admin_settingsTab']" fragment="user"  [routerLinkActive]="['active']">User Roles</a>
+				</div>
+
+				<div class="col-sm-6">
+				<a class="settings-link" [routerLink]="['../admin_settingsTab']" fragment="api" [routerLinkActive]="['active']">API Information </a>
+					<!-- <a class="settings-link" href="admin_settingsTab">API Information</a> -->
+				</div>
+
+				<div class="col-sm-6">
+					<a class="settings-link" data-toggle="modal" data-target="#addEmp">
+					Add bTIPt Employee
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<div class="modal fade" id="addEmp" role="dialog">
+  <div class="modal-dialog small-modal">
+    <div class="modal-content">
+      
+      <div class="modal-body">
+      <div class="alert alert-danger" *ngIf="errorMessage">{{errorMessage.message}}</div>
+      <div class="alert alert-danger" *ngIf="errorForm">{{errorForm}}</div>
+      <form>
+        
+        <div class="group">
+          <label for="hotelName">First Name</label> &nbsp;
+          <input type="text" class="mtl-input" [(ngModel)]="fname" name="fname" required>
+          <span class="bar"></span>
+        </div> 
+
+        <div class="group">
+          <label for="hotelName">Last Name</label> &nbsp;
+          <input type="text" class="mtl-input" [(ngModel)]="lname" name="lname" required>
+          <span class="bar"></span>
+        </div> 
+        
+        <div class="group">
+          <label for="hotelCity">Email</label> &nbsp;
+          <input type="email" class="mtl-input" [(ngModel)]="email"  name="email" required>
+          <span class="bar"></span>
+        </div>
+
+        <div class="col-sm-6 user_roles">
+            <input type="radio" id="super_admin" class="hidden" name="login_type" value="0" 
+            (click)="select_login('0')" checked="checked">
+            <i class="material-icons text-primary" *ngIf="login_type=='0'">&#xE86C;</i>
+            <i class="material-icons" *ngIf="login_type!='0'"(click)="select_login('0')">&#xE40C;</i>
+            <label for="super_admin">Super Admin</label>
+         </div>
+         <div class="col-sm-6 user_roles">
+            <input type="radio" class="hidden" id="admin" name="login_type" value="1" 
+            (click)="select_login('1')">
+            <i class="material-icons text-primary" *ngIf="login_type=='1'">&#xE86C;</i>
+            <i class="material-icons" *ngIf="login_type!='1'"(click)="select_login('1')">&#xE40C;</i>
+            <label for="admin">Admin</label>
+        </div>
+        	<input type="hidden" [(ngModel)]="name" name="name" />
+	       <button type="submit" class="btn btn-default" (click)="submitAdmin()">Submit</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

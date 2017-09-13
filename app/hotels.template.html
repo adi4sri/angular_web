@@ -1,0 +1,169 @@
+<div class="row placeholders" style="background-color:#e7e5e5;">
+    <div class="col-xs-6 col-sm-3 dash-top">
+        <h2>Total Locations</h2>
+        <h3 *ngIf="hotels">{{hotels.length}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>&nbsp;2% from last week</p> -->
+    </div>
+    <div class="col-xs-6 col-sm-3 dash-top">
+        <h2>Total Employees</h2>
+        <h3 *ngIf="workers">{{workers.length}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>&nbsp;15% from last week</p> -->
+    </div>
+    <div class="col-xs-6 col-sm-3 dash-top">
+        <h2>Total Tippers</h2>
+        <h3 *ngIf="tippers">{{tippers.length}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>&nbsp;3% from last week</p> -->
+    </div>
+    <div class="col-xs-6 col-sm-3 dash-top">
+        <h2>Total Tips</h2>
+        <h3 *ngIf="totalamount">{{totalamount|currency:'USD':true}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>&nbsp;5% from last week</p> -->
+    </div>
+</div>
+
+<div class="management-btn">
+  <input type="checkbox" id="selectAll" class="option-input hidden" (click)="selectAllId()" [checked]="isCheckedAll">
+
+  <i class="material-icons text-primary"  (click)="selectAllId()" *ngIf="isCheckedAll">&#xE86C;</i>
+  <i class="material-icons text-grey" (click)="selectAllId()" *ngIf="!isCheckedAll">&#xE40C;</i>
+
+   <label for="selectAll">Select All</label>
+  <a (click)="deleteHotel()"><i class="fa fa-trash"></i> Delete</a>
+  <a (click)="downloadCSV()"><i class="fa fa-exchange export"></i> Export</a>
+  <a (click)="showForm()" data-toggle="modal" data-target="#addHotelModal"><i class="fa fa-plus"></i> Add Location</a>
+
+  <form class="form-inline pull-right hidden-xs">
+    <div class="control-group">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="searchHotel" name="search" placeholder="Search">
+      
+    </div>
+  </form>
+</div>
+
+<form class="form-inline visible-xs">
+  <div class="control-group">
+    <!-- <label for="search">Search:</label> &nbsp; -->
+    <input type="text" class="form-control" [(ngModel)]="searchHotel" name="search" placeholder="Search">
+    
+  </div>
+</form>
+
+
+
+<div class="modal fade" id="addHotelModal" role="dialog">
+  <div class="modal-dialog small-modal">
+    <div class="modal-content">
+      <!-- <div class="modal-header">
+        <b>Add Hotel</b>
+      </div> -->
+      <div class="modal-body">
+      <form *ngIf="hotelForm" >
+        
+        <div class="group">
+          <!-- <label for="hotelName">Name:</label> &nbsp; -->
+          <input type="text" class="mtl-input" [(ngModel)]="hotelName" name="hotelName" required placeholder="HOTEL NAME">
+          <span class="bar"></span>
+        </div> 
+        
+        <div class="group">
+          <!-- <label for="hotelCity">Address</label> &nbsp; -->
+          <input type="text" class="mtl-input" [(ngModel)]="hotelAddress" name="hotelAddress" required placeholder="HOTEL ADDRESS">
+          <span class="bar"></span>
+        </div>
+
+        
+        <div class="group">
+          <!-- <label for="hotelCity">City/State</label> &nbsp; -->
+          <input type="text" class="mtl-input" [(ngModel)]="hotelCity" name="hotelCity" required placeholder="CITY">
+          <span class="bar"></span>
+        </div> 
+
+        <div class="group">
+          <!-- <label for="hotelCity">Zip Code</label> &nbsp; -->
+          <input type="text" class="mtl-input" [(ngModel)]="hotelZip" name="hotelZip" required placeholder="ZIP CODE">
+          <span class="bar"></span>
+        </div>
+
+        <div class="group">
+          <!-- <label for="hotelCity">Email</label> &nbsp; -->
+          <input type="text" class="mtl-input" [(ngModel)]="hotelEmail" name="hotelEmail" required placeholder="EMAIL">
+          <span class="bar"></span>
+        </div>
+
+        <button type="submit" class="btn btn-default btipt-btn-center" (click)="submitHotel()">Add Location</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table class = "table table-striped green-table">
+   
+   <thead>
+      <tr>
+         <th></th>
+         <th>Location Name</th>
+         <th>Address</th>
+         <th>City/State</th>
+         <th>Zip Code</th>
+         <th>Contact</th>
+         <th>Employees</th>
+         <th>Status</th>
+      </tr>
+   </thead>
+   <div class="loader" *ngIf="loader"></div>
+   <tbody *ngIf="!loader">
+      <tr *ngFor="let hotel of pagedItems | myfilter : searchHotel " (click)="displayHotel(hotel)" style="cursor: pointer;">
+         <td>
+          <input type="checkbox" class="option-input hidden" name="select" id="{{hotel.id}}" 
+           (click)="selectId(hotel.id)" value="{{hotel.id}}" [checked]="isChecked(hotel.id)" >
+
+          <i class="material-icons text-primary" (click)="selectId(hotel.id)" *ngIf="isChecked(hotel.id)">&#xE86C;</i>
+          <i class="material-icons text-grey" (click)="selectId(hotel.id)" *ngIf="!isChecked(hotel.id)">&#xE40C;</i>
+
+         </td>
+         <td *ngIf="hotel.status == 1"><a (click)="view_hotel(hotel.id)" >{{hotel.name}}</a></td>
+         <td *ngIf="hotel.status == 0">{{hotel.name}}</td>
+         <td>{{hotel.address}}</td>
+         <td>{{hotel.city}}</td>
+         <td>{{hotel.zip_code}}</td>
+         <td>{{hotel.email}}</td>
+         <td>{{hotel.count}}</td>
+         <!-- <td>{{hotel.status}}</td> -->
+         <td class="status">
+         <i class="fa fa-circle status-indicator" *ngIf="hotel.status == 1"></i>
+         <i class="fa fa-circle-o status-indicator" *ngIf="hotel.status == 0"></i>
+           <select class="mtl-select status-dropdown" [(ngModel)]="hotel.status"
+           (change)="updateHotelStatus(hotel.id,hotel.status)">
+             <option value="0">Inactive</option>
+             <option value="1">Active</option>
+           </select>
+         </td>
+      </tr>      
+   </tbody>
+   
+</table>
+
+<ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(1)">First</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+    </li>
+    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+        <a (click)="setPage(page)">{{page}}</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.totalPages)">Last</a>
+    </li>
+</ul>
+
+<!--<p *ngIf="!auth.authenticated()">Log In to Get Access to a Secured Ping</p>
+<button class="btn btn-primary" (click)="ping()">Ping</button>
+<button class="btn btn-primary" (click)="securedPing()" *ngIf="auth.authenticated()">Secured Ping</button>
+<h2>{{message}}</h2>-->

@@ -1,0 +1,177 @@
+
+<div class="setting">
+	
+  
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#profile">Profile</a></li>
+    <li><a data-toggle="tab" href="#user">User Roles</a></li>
+    <li><a data-toggle="tab" href="#api">API Integration</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="profile" class="tab-pane fade in active">
+      <!-- <h3>Profile</h3> -->
+      <h2 class="text-center"> <b>{{user.name}}</b></h2>
+      <div class="loader" *ngIf="loader"></div>
+      <div class="row" *ngIf="!loader">
+      	<div class="col-sm-6">
+      	<form>
+      		<div class="group">
+	          <label>Email Address</label> &nbsp;
+	          <input type="email" class="mtl-input" disabled value="{{user.email}}">
+	          <span class="bar"></span>
+        	</div> 
+      		<h4 class="text-primary margin-top"><b>Change Your Password</b></h4>
+      		
+          <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+            {{errorMessage.message}}
+             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          </div>
+          <div class="alert alert-success" role="alert" *ngIf="success">
+            {{success}}
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          </div>
+          <div class="alert alert-danger" role="alert" *ngIf="compare_pass == false">
+            Passwords must match!
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          </div>
+
+          <div class="group">
+            <label>Current Password </label> &nbsp;
+            <input type="password" class="mtl-input" [(ngModel)]="current_pass" name="current_pass"/>
+            <span class="bar"></span>
+          </div>
+
+          <div class="group">
+            <label>New Password </label> &nbsp;
+            <input type="password" class="mtl-input" [(ngModel)]="new_pass" name="new_pass"/>
+            <span class="bar"></span>
+          </div>
+
+          <div class="group">
+            <label>Retype New Password </label> &nbsp;
+            <input type="password" class="mtl-input" [(ngModel)]="renew_pass" name="renew_pass"/>
+            <span class="bar"></span>
+          </div>
+
+          <div class="form-group">
+	      		<input type="submit" (click)="updatePassword()" value="Save Changes" class="form-control btn-default"/>
+	      	</div>
+	      </form>
+      	</div>
+
+      </div>
+    </div>
+
+    <div id="user" class="tab-pane fade">
+      <h2 class="text-center">User Roles</h2>
+      <div class="alert alert-success" role="alert" *ngIf="role_success">
+              {{role_success}}
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      </div>
+      <div class="loader" *ngIf="loader"></div>
+      <div class="row user-roles" *ngIf="!loader">
+      	<div class="col-sm-6">
+      	<h3>Super Admin</h3>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+            		<input type="checkbox" class="option-input hidden" checked disabled> 
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td><label for="super_location">Location</label><br/></td>
+            </tr>
+            <tr>
+              <td>
+            		<input type="checkbox" class="option-input hidden" checked disabled>
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td>
+                <label for="super_emp">Employees</label><br/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+            		<input type="checkbox" class="option-input hidden" checked disabled>
+                <i class="material-icons text-primary">&#xE86C;</i>
+              </td>
+              <td><label for="super_tipper">Tipper</label><br/></td>
+            </tr>
+      		<tr>
+            <td>
+              <input type="checkbox" class="option-input hidden" checked disabled>
+              <i class="material-icons text-primary">&#xE86C;</i>
+            </td>
+            <td> <label for="super_settings">Settings</label><br/></td>
+            </tr>
+          </tbody>
+        </table>
+      	</div>
+
+      	<div class="col-sm-6" *ngIf="role">
+      	<h3>Admin</h3>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+      		      <input type="checkbox" class="option-input hidden" id="admin_location"
+           [checked]="role.location" [(ngModel)]="role.location"> 
+                <i class="material-icons text-primary" *ngIf="role.location" (click)="role.location=!role.location">&#xE86C;</i>
+                <i class="fa fa-circle-thin selectoff" *ngIf="!role.location" (click)="role.location=!role.location"></i>
+              </td>
+              <td>
+                <label for="admin_location">Location</label><br/>
+              </td>
+            </tr>
+            <tr>
+              <td>          
+      		      <input type="checkbox" class="option-input hidden" id="admin_emp"
+          [checked]="role.admin_employees" [(ngModel)]="role.admin_employees"> 
+          <i class="material-icons text-primary" *ngIf="role.admin_employees" (click)="role.admin_employees=!role.admin_employees">&#xE86C;</i>
+                <i class="fa fa-circle-thin selectoff" *ngIf="!role.admin_employees" (click)="role.admin_employees=!role.admin_employees"></i>
+              </td>
+              <td>
+                <label for="admin_emp">Employees</label><br/>
+              </td>
+            </tr>
+
+      		  <tr>
+              <td>
+                <input type="checkbox" class="option-input hidden" id="admin_tipper"
+          [checked]="role.tip_center" [(ngModel)]="role.tip_center">
+          <i class="material-icons text-primary" *ngIf="role.tip_center" (click)="role.tip_center=!role.tip_center">&#xE86C;</i>
+                <i class="fa fa-circle-thin selectoff" *ngIf="!role.tip_center" (click)="role.tip_center=!role.tip_center"></i>
+
+              </td>
+              <td> <label for="admin_tipper">Tipper</label><br/></td>
+            </tr>
+            <tr>
+              <td>
+      		      <input type="checkbox" class="option-input hidden" id="admin_setting"
+           [checked]="role.setting" [(ngModel)]="role.setting"> 
+            <i class="material-icons text-primary" *ngIf="role.setting" (click)="role.setting=!role.setting">&#xE86C;</i>
+                <i class="fa fa-circle-thin selectoff" *ngIf="!role.setting" (click)="role.setting=!role.setting"></i>
+              </td>
+              <td>
+                <label for="admin_setting">Settings</label><br/>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+      	</div>
+
+      </div>
+      <div class="row col-sm-6 margin-top">
+          <input type="submit" (click)="updateRoles()" class="form-control btn-default" value="Save Changes"/>
+        </div>
+    </div>
+
+    <div id="api" class="tab-pane fade">
+      <h2 class="text-center">API Auto Populates</h2>
+    </div>
+    
+  </div>
+
+
+</div>

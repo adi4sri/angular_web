@@ -1,0 +1,47 @@
+<div id="bank-info">
+<div class="panel panel-default">
+	<img src="images/logo-new.png" class="img-responsive center-block login-logo"/>
+	<h3 class="text-center h4">Bank Information</h3>
+	<div class="alert alert-danger" *ngIf="errorMessage">
+		{{errorMessage.message}}
+	</div>
+	
+	<div class="alert alert-danger" *ngFor="let error of errors">
+			{{error.message}}
+	</div>
+	
+	<div class="alert alert-success" *ngIf="success">{{success}}</div>
+	<form *ngIf="!success">
+	<p class=" text-primary">
+	Welcome to bTIPt! We need your bank information in order to deposit tips into your account. All your information will be stored securely and kept private. Feel free to read our <a href="#">Privacy Policy.</a>
+	</p>
+		<div class="group">
+	          <input type="text" class="mtl-input" required placeholder="ROUTING NUMBER" [(ngModel)]="routingNumber" name="routingNumber">
+       	</div> 
+       	<div class="group">
+	          <input type="text" class="mtl-input" required placeholder="ACCOUNT NUMBER"  [(ngModel)]="accountNumber" name="accountNumber">
+       	</div> 
+       	<div class="group">
+	          <select class="mtl-select"  [(ngModel)]="type" name="type">
+	          	<option value="">Account Type</option>
+	          	<option value="checking">Checking</option>
+	          	<option value="savings">Savings</option>
+	          </select>
+       	</div> 
+       	<div class="group">
+	          <input type="text" class="mtl-input" required placeholder="FIRST NAME ON ACCOUNT" [(ngModel)]="f_name" name="f_name">
+       	</div> 
+       	<div class="group">
+	          <input type="text" class="mtl-input" required placeholder="LAST NAME ON ACCOUNT" [(ngModel)]="l_name" name="l_name">
+       	</div> 
+       	<div class="group">
+	          <input type="text" class="mtl-input" required placeholder="COMPANY" [(ngModel)]="company" name="company">
+       	</div>
+
+       	<div class="form-group">
+       		<input type="submit" class="form-control btn-default" value="SAVE ACCOUNT" (click)="submitBankInfo()"/>
+       	</div> 
+       	<p>By clicking on Save Account, you agree to bTIPt's <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy.</a></p>
+	</form>
+</div>
+</div>

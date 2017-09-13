@@ -1,0 +1,85 @@
+<div class="management-btn">
+  <input type="checkbox" class="option-input" name="select-all" id="select-all"><label for="select-all">Select All</label>
+  <a ><i class="fa fa-trash"></i> Delete</a>
+  <a ><i class="fa fa-exchange export"></i> Export</a>
+  <a (click)="showForm()" data-toggle="modal" data-target="#addEmpModal"><i class="fa fa-plus"></i> Add Employee</a>
+
+  <form class="form-inline pull-right hidden-xs">
+    <div class="group search">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="mtl-input" [(ngModel)]="searchWorker" name="search" placeholder="Search">
+      <span class="bar"></span>
+    </div>
+  </form>
+</div>
+
+<form class="form-inline visible-xs">
+    <div class="group search">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="mtl-input" [(ngModel)]="searchWorker" name="search" placeholder="Search">
+      <span class="bar"></span>
+    </div>
+</form>
+
+<div class="modal fade" id="addEmpModal" role="dialog">
+  <div class="modal-dialog small-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <b>Add Employee</b>
+      </div>
+      <div class="modal-body">
+      <form class="" *ngIf="workerForm" >
+        <div class="group">
+          <label for="workerName">Name:</label> &nbsp;
+          <input type="text" class="mtl-input" [(ngModel)]="workerName" name="workerName" >
+          <span class="bar"></span>
+        </div> 
+
+        <div class="group">
+          <label for="email">Email:</label> &nbsp;
+          <input type="email" class="mtl-input" [(ngModel)]="email" name="email" >
+          <span class="bar"></span>
+        </div> 
+
+        <div class="group">
+        <label for="department">Type:</label> &nbsp;
+        <select class="mtl-select" [(ngModel)]="department" name="department" >
+          <option>Housekeeper</option>
+          <option>Concierge</option>
+          <option>Bellhop</option>
+        </select>
+          <span class="bar"></span>
+        </div>
+        <button type="submit" class="btn btn-default" (click)="submitWorker()">Submit</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<table class = "table table-striped green-table">
+   
+   <thead>
+      <tr>
+         <th></th>
+         <th>Name</th>
+         <th>Email</th>
+         <th>Department</th>
+      </tr>
+   </thead>
+
+   <tbody>
+      <tr *ngFor="let worker of workers | myfilter : searchWorker" >
+         <td><input type="checkbox" class="option-input" /></td>
+         <td>{{worker.name}}</td>
+         <td>{{worker.email}}</td>
+         <td>{{worker.department}}</td>
+      </tr>      
+   </tbody>
+   
+</table>
+
+<!--<p *ngIf="!auth.authenticated()">Log In to Get Access to a Secured Ping</p>
+<button class="btn btn-primary" (click)="ping()">Ping</button>
+<button class="btn btn-primary" (click)="securedPing()" *ngIf="auth.authenticated()">Secured Ping</button>
+<h2>{{message}}</h2>-->
+<!-- Trigger the modal with a button -->

@@ -1,0 +1,68 @@
+<br>
+<div class="management-btn">
+  
+  <a (click)="downloadCSV()"><i class="fa fa-exchange export"></i> Export</a>
+
+  <form class="form-inline pull-right hidden-xs">
+    <div class="control-group ">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="workerName" name="search" placeholder="Search">
+      
+    </div>
+  </form>
+</div>
+
+<form class="form-inline visible-xs">
+    <div class="control-group">
+      <!-- <label for="search">Search:</label> &nbsp; -->
+      <input type="text" class="form-control" [(ngModel)]="workerName" name="search" placeholder="Search">
+      
+    </div>
+</form>
+<table class = "table table-striped green-table">
+   
+   <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Role</th>
+        
+        <th># of Tips</th>
+        <th>Total Tips</th>
+        <th>Avg Tip</th>
+        <th>Avg Rating</th>
+      </tr>
+   </thead>
+   <div class="loader" *ngIf="loader"></div>
+   <tbody *ngIf="!loader">
+       
+      <tr *ngFor="let tip of pagedItems | myfilter: workerName">
+        <td>{{tip.name}}</td>
+        <td>{{tip.worker_department}}</td>
+        
+        <td>{{tip.count}}</td>
+        <td>{{tip.total}}</td>
+        <td>{{tip.avg}}</td>
+        <td>{{tip.avg_rating}}</td>
+      </tr>
+      
+   </tbody>
+   
+</table>
+
+<ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(1)">First</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === 1}">
+        <a (click)="setPage(pager.currentPage - 1)">Previous</a>
+    </li>
+    <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+        <a (click)="setPage(page)">{{page}}</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.currentPage + 1)">Next</a>
+    </li>
+    <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+        <a (click)="setPage(pager.totalPages)">Last</a>
+    </li>
+</ul>
