@@ -26,14 +26,18 @@
       <div class="col-md-6 dash-list" >
       <h2>Top Comments</h2>
       <br>
-      <div *ngFor="let review of reviews">
-        <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>0, 'glyphicon-star-empty':review.rating<1 }" ></span>
-        <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>1, 'glyphicon-star-empty':review.rating<2}" ></span>
-        <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>2, 'glyphicon-star-empty':review.rating<3}" ></span>
-        <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>3, 'glyphicon-star-empty':review.rating<4}" ></span>
-        <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>4, 'glyphicon-star-empty':review.rating<5}" ></span>
-        <p>{{review.comment}}</p>
+      <div *ngIf="!is_review">
+        <div *ngFor="let review of reviews">
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>0, 'glyphicon-star-empty':review.rating<1 }" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>1, 'glyphicon-star-empty':review.rating<2}" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>2, 'glyphicon-star-empty':review.rating<3}" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>3, 'glyphicon-star-empty':review.rating<4}" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>4, 'glyphicon-star-empty':review.rating<5}" ></span>
+          <p>{{review.comment}}</p>
+        </div>
       </div>
+
+      <div *ngIf="is_review">No review yet</div>
                 
       </div>
     </div>

@@ -46,6 +46,7 @@ export class HotelsPage {
   pager: any = {};
   pagedItems: any[];
   totalamount:any;
+  errorMessage:any;
   constructor(private auth: Auth, 
   private http: Http,
   private authHttp: AuthHttp,
@@ -64,7 +65,7 @@ console.log(this.user);
       });
 
       this.tipsService.dashboard(this.user.hotel_id)
-      .then(data2 => {
+      .then((data2:any) => {
         this.tips = data2;
         this.loader = false;
       });
@@ -206,29 +207,35 @@ console.log(this.user);
   //add worker to allowed workers list for signup - need to put in real hotel_id here
   submitHotel() {
     this.loader = true;
-    this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail)
-      .then(data => {
-        console.log("data",data);
-      // refresh hotel list  
-      this.hotelService.getHotels()
-        .then(data2 => {
-        this.hotels = data2;
-        this.setPage(1);
-          console.log(data2); 
-          this.loader = false;       
-        });// close refresh
-        this.hotelForm = false;
-        $('#addHotelModal').modal('hide');
-        this.hotelName='';
-        this.hotelCity='';
-        this.hotelAddress='';
-        this.hotelZip=''
-        this.hotelEmail='';
-      })
-      .catch(error =>{
-        console.log(error);
-        this.loader = false;  
-        });
+    if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail){
+      this.errorMessage = 'Please fill all the fields correctly';
+      this.loader = false;       
+    }
+    else{
+        this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail)
+          .then(data => {
+            console.log("data",data);
+          // refresh hotel list  
+          this.hotelService.getHotels()
+            .then(data2 => {
+            this.hotels = data2;
+            this.setPage(1);
+              console.log(data2); 
+              this.loader = false;       
+            });// close refresh
+            this.hotelForm = false;
+            $('#addHotelModal').modal('hide');
+            this.hotelName='';
+            this.hotelCity='';
+            this.hotelAddress='';
+            this.hotelZip=''
+            this.hotelEmail='';
+          })
+          .catch(error =>{
+            console.log(error);
+            this.errorMessage = 'Account with this email already exist';
+            this.loader = false;  
+            });}
   }
 
   downloadCSV(){

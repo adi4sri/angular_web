@@ -43,6 +43,7 @@ export class WorkersPage {
   pagedItems: any[];
   tippers:any;
   updateForm:boolean;
+  errorMessage:any;
   constructor(private auth: Auth, 
   private http: Http,
   private workerService: WorkersService,
@@ -219,7 +220,9 @@ export class WorkersPage {
     }
     this.loader=true;
     this.name = this.f_name + " " + this.l_name;
-
+    if(!this.l_name || !this.f_name || !this.email || this.hotel_id == "none" || !this.login_type){
+      this.errorMessage = 'Please fill all fields correctly';
+    }else{
     this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
       .then(data2 => {
         console.log(data2);
@@ -245,6 +248,7 @@ export class WorkersPage {
         }
         this.loader = false;
       }); // end post
+    }
   }
 
   downloadCSV(){

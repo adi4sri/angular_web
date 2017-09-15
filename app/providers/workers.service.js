@@ -28,6 +28,34 @@ var WorkersService = (function () {
         //this.userAuthObj = auth.user;
         //this.authId = this.userAuthObj.user_id.substring(6); //remove auth0 header
     }
+    WorkersService.prototype.checkEmp = function (emails) {
+        var _this = this;
+        var json = { emails: emails };
+        var params = json;
+        return new Promise(function (resolve) {
+            _this.http.post(_this.url + 'users/check_workers', json, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            });
+        });
+    };
+    WorkersService.prototype.bulkEmp = function (workers, hotel_id) {
+        var _this = this;
+        var postData = {
+            workers: workers,
+            hotel_id: hotel_id
+        };
+        return new Promise(function (resolve, reject) {
+            _this.http.post(_this.url + 'users/worker/bulk', postData, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
     WorkersService.prototype.getReviews = function (id) {
         var _this = this;
         return new Promise(function (resolve) {

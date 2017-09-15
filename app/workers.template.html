@@ -41,6 +41,9 @@
       <div class="alert alert-danger" *ngIf="validEmail">
         {{validEmail}}
       </div>
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        {{errorMessage}}
+      </div>
       <form class="" *ngIf="workerForm" >
         <div class="group">
           <!-- <label for="name">First Name</label> &nbsp; -->

@@ -36,7 +36,7 @@ var AppComponent = (function () {
         this.auth.logout();
         //this.router.navigate(["/login"]);
         this.router.navigate(["/login"]);
-        localStorage.clearAll();
+        localStorage.clear();
         //window.location.replace('/login');
     };
     AppComponent.prototype.view_admin = function () {

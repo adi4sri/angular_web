@@ -24,20 +24,20 @@
 
 <div class="row padding">
   <div class="col-md-7 graph-box" >
-  <div class="row">
-  <div class="col-sm-4">
-    <h4 class="" style="font-weight: bold;">Total Tips</h4>
-  </div>
+  <!-- <div class="row"> -->
+  <div class="" style="margin-top: 10px;">
+    <h4 class="" style="font-weight: bold;display: inline-block;">Total Tips</h4>
    <ul class="nav nav-tabs graph col-sm-8 pull-right">
       <li><a data-toggle="tab" href="#day" (click)="top_tipped_daily();top_review_daily()">Day</a></li>
       <li><a data-toggle="tab" href="#week" (click)="top_tipped_weekly();top_review_weekly()" >Week</a></li>
       <li class="active"><a data-toggle="tab" href="#month" (click)="top_tipped_monthly();top_review_monthly()" >Month</a></li>
       <li><a data-toggle="tab" href="#year" (click)="top_tipped_yearly();top_review_yearly()">Year</a></li>
     </ul>
+  </div>
     <div *ngIf="!lineChartMonthlyData.length" style="margin-top:10%;">
       <p>Currently, There is no Department or Tip data available!</p>
     </div>
-    </div>
+    <!-- </div> -->
     <div class="tab-content">
         <div id="month" class="tab-pane fade in active">
                           <canvas *ngIf="lineChartMonthlyData.length" baseChart width="645" height="467"
@@ -105,19 +105,18 @@
           <div *ngIf="!loader">
           <h2>Top Tipped Employees</h2>
           <h4>In {{period}}</h4>
-            <ol *ngIf="topped_emp">
+            <ol *ngIf="topped_emp.length > 0">
               <li *ngFor="let emp of topped_emp">{{emp.name}}</li>
             </ol>
-            <div *ngIf="!topped_emp">No tipping in {{period}}</div>
+            <div *ngIf="topped_emp.length == 0">No tipping in {{period}}</div>
         <!--<button (click)="randomize()">CLICK</button>-->
         </div>
       <!-- </div>
     <div class="col-md-6 dash-list"> -->
     <div *ngIf="!loader">
           <h2>Reviews</h2>
-          
+          <div *ngIf="!is_review">
           <h4>In {{review_period}}</h4> 
-          <div *ngIf="is_review">
           <div *ngFor="let review of reviews" class="review">
             <span [ngClass]="{'glyphicon-star':review.rating > 0}" class="glyphicon"></span> 
             <span [ngClass]="{'glyphicon-star':review.rating > 1}" class="glyphicon"></span> 
@@ -129,7 +128,7 @@
             </p>
           </div>
           </div>
-          <div *ngIf="!is_review">No Reviews in {{review_period}}</div>
+          <div *ngIf="is_review">No Reviews in {{review_period}}</div>
           <!-- <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
             <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
             <span class="glyphicon glyphicon-star" aria-hidden="true"></span>

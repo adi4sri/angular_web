@@ -34,7 +34,7 @@ export class AppComponent {
 	this.auth.logout();
 	//this.router.navigate(["/login"]);
 	this.router.navigate(["/login"]);
-  localStorage.clearAll();
+  localStorage.clear();
  	//window.location.replace('/login');
 	}
 

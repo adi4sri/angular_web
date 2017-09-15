@@ -11,7 +11,8 @@
 
   <a (click)="showForm()" data-toggle="modal" data-target="#addEmpModal"><i class="fa fa-plus"></i> Add Employee</a>
 
-  <a ><i class="fa fa-plus"></i> Upload Employees</a>
+  <a data-toggle="modal" data-target="#uploadEmp"><i class="fa fa-plus"></i> Upload Employees</a>
+
 
   <form class="form-inline pull-right hidden-xs">
     <div class="control-group">
@@ -29,6 +30,58 @@
       <span class="bar"></span>
     </div>
 </form>
+<div class="modal fade" id="uploadEmp" role="dialog">
+  <div class="modal-dialog small-modal">
+    <div class="modal-content">
+      
+       <div class="modal-header text-center">
+        Import a CSV file to upload employees
+       </div>
+      <div class="modal-body">
+      <p class="text-primary text-justify">You can upload multiple employees at a time. Just download the CSV format, Add details of your employees, Upload the file and You are done!</p>
+      <div class="row">
+      <div class="col-sm-6">
+        <input type='file' id='fileInput'  (change)="handleFileSelect($event)" [(ngModel)]="csvUrl" accept=".csv"> 
+      </div>
+      <div class="col-sm-6">
+        <select [(ngModel)]="workers_hotel" name="workers_hotel" (change)="handleHotelSelect()" class="select_hotel">
+          <option *ngFor="let hotel of hotels"  [ngValue]="hotel.id">{{hotel.name}}</option>
+        </select>
+      </div>        
+      </div>
+
+      <div class="row text-center emp_upload_btn">
+      <div class="col-sm-12 margin-top">
+        <button (click)="checkEmp()" class="btn btn-default" *ngIf="!loader" [disabled]="empty_file">
+        <i class="fa fa-upload"></i> Upload
+        </button>
+      </div>
+
+      <div class="col-sm-12 margin-top">
+        <a class="btn btn-secondary" href="assets/format.csv" *ngIf="!loader">
+          <i class="fa fa-download"></i> Download CSV Format
+        </a>
+      </div>
+      </div>
+      <div class="loader" *ngIf="loader"></div>
+      <div *ngFor="let email of checked_emails; let i=index">
+        <div class="alert alert-danger alert-dismissible" *ngIf="i<3">User with {{email}} is already exist!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      </div>
+      
+      </div>
+      
+      <div class="modal-footer ">
+        <p class="text-danger" *ngIf="errorMessage">{{errorMessage}}</p>
+        <p class="text-danger" *ngIf="empty_file">{{empty_file}}</p>
+        <p class="text-danger" *ngIf="checked_emails.length>0">Total {{checked_emails.length}} emails are already exist</p>
+        <p class="text-success" *ngIf="successMessage">{{successMessage}}</p>
+      </div>
+      
+    </div>
+  </div>  
+</div>
 
 <div class="modal fade" id="addEmpModal" role="dialog">
   <div class="modal-dialog small-modal">

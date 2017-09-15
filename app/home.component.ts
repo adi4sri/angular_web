@@ -55,7 +55,7 @@ export class HomeComponent {
   }
      this.loader = true;
     this.tipsService.top_tipped_emp(this.user.hotel_id)
-          .then(data =>{
+          .then((data:any) =>{
             this.topped_emp = data;
             if(this.topped_emp && this.topped_emp[0]){
             switch (this.topped_emp[0].month){
@@ -87,12 +87,14 @@ export class HomeComponent {
     this.workersService.getMonthlyReviews(this.user.hotel_id)
           .then((data:any)=>{
             console.log('Month',data);
-            
-             if(data && data.message){
-              this.is_review = false;
-            }else{
+            this.reviews = data;
+            if(this.reviews && this.reviews.message){
+              this.review_period = 'this month';
               this.is_review = true;
-              this.reviews = data;
+            }else{
+                this.is_review = false;
+            }
+            
             if(this.reviews && this.reviews[0]){
               switch (this.reviews[0].month){
                   case 1: this.review_period = 'Jan'; break;
@@ -113,7 +115,6 @@ export class HomeComponent {
               else{
                 this.review_period = 'this month';
               }
-            }
             })
           .catch(error=>{
             console.log(error);
@@ -121,7 +122,7 @@ export class HomeComponent {
 
     //houseData=[];
     this.tipsService.dashboard(this.user.hotel_id)
-      .then(data2 => {
+      .then((data2:any) => {
       this.tips = data2;
         this.show = true;
       });
@@ -216,9 +217,10 @@ export class HomeComponent {
   this.workersService.getDailyReviews(this.user.hotel_id)
           .then((data:any) =>{
             if(data && data.message){
-              this.is_review = false;
-            }else{
+             this.review_period = 'this day';
               this.is_review = true;
+            }else{
+              this.is_review = false;
               this.reviews = data;
             }
              this.review_period = 'this day';
@@ -233,11 +235,12 @@ export class HomeComponent {
   this.loader = true;
   this.workersService.getWeeklyReviews(this.user.hotel_id)
           .then((data:any) =>{
-            if(data && data.message){
-              this.is_review = false;
-            }else{
+            this.reviews = data;
+            if(this.reviews  && this.reviews .message){
               this.is_review = true;
-              this.reviews = data;
+              this.review_period = 'this week';
+            }else{
+              this.is_review = false;
             }
             this.review_period = 'this week';
             this.loader = false;
@@ -251,13 +254,16 @@ export class HomeComponent {
   this.loader = true;
   this.workersService.getMonthlyReviews(this.user.hotel_id)
           .then((data:any)=>{
-          if(data && data.message){
-              this.is_review = false;
-            }
-          else{
+         console.log('Month',data);
             this.reviews = data;
-            this.is_review = true;
+            if(this.reviews && this.reviews.message){
+              this.review_period = 'this month';
+              this.is_review = true;
+            }else{
+                this.is_review = false;
+            }
             if(this.reviews && this.reviews[0]){ 
+              this.is_review = true;
               switch (this.reviews[0].month){
                 case 1: this.review_period = 'Jan'; break;
                 case 2: this.review_period = 'Feb'; break;
@@ -274,10 +280,10 @@ export class HomeComponent {
                 default: this.review_period = 'this month';break;
               }
             }
-              else{
-              this.review_period = 'this month';
-             }
-          }
+            else{
+            this.review_period = 'this month';
+            }
+           
             this.loader = false;
             })
           .catch(error=>{
@@ -289,14 +295,12 @@ export class HomeComponent {
   this.loader = true;
   this.workersService.getYearlyReviews(this.user.hotel_id)
           .then((data:any) =>{
-            if(data && data.message){
-              this.is_review = false;
-            }else{
-              this.is_review = true;
               this.reviews = data;
-              this.review_period='';
-              if(this.reviews && this.reviews[0])
-                {
+            if(data && data.message){
+              this.review_period = 'this year';
+              this.is_review = true;
+            }else{
+              if(this.reviews && this.reviews[0]){
                   this.review_period = this.reviews[0].year;
               }else{
                 this.review_period = 'this year';

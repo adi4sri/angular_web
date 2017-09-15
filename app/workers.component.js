@@ -190,31 +190,36 @@ var WorkersPage = (function () {
         }
         this.loader = true;
         this.name = this.f_name + " " + this.l_name;
-        this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
-            .then(function (data2) {
-            console.log(data2);
-            // refresh pending worker list for display
-            _this.workerService.getWorkers(_this.user.hotel_id)
-                .then(function (data) {
-                _this.workers = data;
-                _this.setPage(1);
+        if (!this.l_name || !this.f_name || !this.email || this.hotel_id == "none" || !this.login_type) {
+            this.errorMessage = 'Please fill all fields correctly';
+        }
+        else {
+            this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
+                .then(function (data2) {
+                console.log(data2);
+                // refresh pending worker list for display
+                _this.workerService.getWorkers(_this.user.hotel_id)
+                    .then(function (data) {
+                    _this.workers = data;
+                    _this.setPage(1);
+                    _this.loader = false;
+                    console.log(data);
+                });
+                $('#addEmpModal').modal('hide');
+                _this.f_name = '';
+                _this.l_name = '';
+                _this.email = '';
+                _this.hotel_id = '';
+                _this.login_type = '';
+            })
+                .catch(function (error) {
+                var msg = JSON.parse(error._body);
+                if (msg) {
+                    _this.validEmail = 'Account already exist with this email!';
+                }
                 _this.loader = false;
-                console.log(data);
-            });
-            $('#addEmpModal').modal('hide');
-            _this.f_name = '';
-            _this.l_name = '';
-            _this.email = '';
-            _this.hotel_id = '';
-            _this.login_type = '';
-        })
-            .catch(function (error) {
-            var msg = JSON.parse(error._body);
-            if (msg) {
-                _this.validEmail = 'Account already exist with this email!';
-            }
-            _this.loader = false;
-        }); // end post
+            }); // end post
+        }
     };
     WorkersPage.prototype.downloadCSV = function () {
         var options = {

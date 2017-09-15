@@ -33,6 +33,10 @@ var AdminWorkers = (function () {
         this.isCheckedAll = false;
         this.loader = false;
         this.pager = {};
+        this.csvData = [];
+        this.emails = [];
+        this.checked_emails = [];
+        this.empty_file = "Please select a CSV file to upload employees";
         console.log('user', this.user);
         this.id = this.user.id;
         this.worker = [];
@@ -53,10 +57,104 @@ var AdminWorkers = (function () {
         this.hotelService.getHotels()
             .then(function (data2) {
             _this.hotels = data2;
+            _this.dropdown_hotels = data2;
             console.log(data2);
+            _this.dropdown_hotels.unshift({ id: 'none', name: 'Please Select Hotel' });
+            _this.workers_hotel = _this.dropdown_hotels[0].id;
             _this.loader = false;
         });
     }
+    AdminWorkers.prototype.extractData = function (res) {
+        var lines = res.split("\n");
+        var result = [];
+        var headers = lines[0].split(",");
+        this.emails = [];
+        for (var i = 1; i < lines.length - 1; i++) {
+            var obj = {};
+            var currentline = lines[i].split(",");
+            for (var j = 0; j < headers.length; j++) {
+                obj[headers[j]] = currentline[j];
+            }
+            result.push(obj);
+        }
+        this.csvData = result; //JavaScript object
+        for (var i = 0; i < this.csvData.length; i++) {
+            if (!this.csvData[i].email) {
+                this.empty_file = "Email is required in CSV.";
+            }
+            this.emails.push(this.csvData[i].email);
+        }
+        for (var i = 0; i <= this.emails.length; i++) {
+            for (var j = i; j <= this.emails.length; j++) {
+                if (i != j && this.emails[i] == this.emails[j]) {
+                    this.empty_file = "CSV contains duplicate emails";
+                }
+            }
+        }
+        console.log(this.emails);
+    };
+    AdminWorkers.prototype.handleHotelSelect = function () {
+        if (this.workers_hotel == 'none') {
+            this.empty_file = "Please select hotel";
+        }
+        else {
+            this.empty_file = "";
+        }
+    };
+    AdminWorkers.prototype.handleFileSelect = function (evt) {
+        var _this = this;
+        var files = evt.target.files; // FileList object
+        var file = files[0];
+        var reader = new FileReader();
+        if (!file) {
+            this.empty_file = "Please select a CSV file to upload employees";
+        }
+        else {
+            this.empty_file = "";
+            this.handleHotelSelect();
+            reader.readAsText(file);
+            reader.onload = function (event) {
+                var csv = event.target.result; // Content of CSV file
+                //console.log(event.target.result);
+                _this.extractData(csv); //Here you can call the above function.
+            };
+        }
+    };
+    AdminWorkers.prototype.checkEmp = function () {
+        var _this = this;
+        console.log(this.csvData);
+        var emails = this.emails.join();
+        this.loader = true;
+        this.errorMessage = '';
+        this.successMessage = '';
+        this.checked_emails = [];
+        this.workerService.checkEmp(emails)
+            .then(function (data) {
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    _this.checked_emails.push(data[i].email);
+                }
+                _this.loader = false;
+            }
+            else {
+                _this.workerService.bulkEmp(_this.csvData, _this.workers_hotel)
+                    .then(function (data1) {
+                    console.log(data1);
+                    _this.successMessage = 'Employees added successfully';
+                    _this.loader = false;
+                })
+                    .catch(function (error1) {
+                    _this.errorMessage = 'Cannot add employees! One or more emails in data are already exist in Dwolla';
+                    console.log(_this.errorMessage);
+                    _this.loader = false;
+                });
+            }
+        })
+            .catch(function (error) {
+            console.log(error);
+            _this.loader = false;
+        });
+    };
     AdminWorkers.prototype.updateWorker = function (worker_Id, status) {
         var _this = this;
         this.loader = true;
@@ -176,7 +274,6 @@ var AdminWorkers = (function () {
         this.name = this.f_name + " " + this.l_name;
         if (!this.l_name || !this.f_name || !this.email || this.hotel_id == "none" || !this.login_type) {
             this.errorMessage = 'Please fill all fields correctly';
-            console.log(this.errorMessage);
         }
         else {
             this.loader = true;

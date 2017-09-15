@@ -184,58 +184,59 @@ var HomeComponent = (function () {
         this.workersService.getMonthlyReviews(this.user.hotel_id)
             .then(function (data) {
             console.log('Month', data);
-            if (data && data.message) {
-                _this.is_review = false;
+            _this.reviews = data;
+            if (_this.reviews && _this.reviews.message) {
+                _this.review_period = 'this month';
+                _this.is_review = true;
             }
             else {
-                _this.is_review = true;
-                _this.reviews = data;
-                if (_this.reviews && _this.reviews[0]) {
-                    switch (_this.reviews[0].month) {
-                        case 1:
-                            _this.review_period = 'Jan';
-                            break;
-                        case 2:
-                            _this.review_period = 'Feb';
-                            break;
-                        case 3:
-                            _this.review_period = 'Mar';
-                            break;
-                        case 4:
-                            _this.review_period = 'Apr';
-                            break;
-                        case 5:
-                            _this.review_period = 'May';
-                            break;
-                        case 6:
-                            _this.review_period = 'Jun';
-                            break;
-                        case 7:
-                            _this.review_period = 'Jul';
-                            break;
-                        case 8:
-                            _this.review_period = 'Aug';
-                            break;
-                        case 9:
-                            _this.review_period = 'Sep';
-                            break;
-                        case 10:
-                            _this.review_period = 'Oct';
-                            break;
-                        case 11:
-                            _this.review_period = 'Nov';
-                            break;
-                        case 12:
-                            _this.review_period = 'Dec';
-                            break;
-                        default:
-                            _this.review_period = 'this month';
-                            break;
-                    }
+                _this.is_review = false;
+            }
+            if (_this.reviews && _this.reviews[0]) {
+                switch (_this.reviews[0].month) {
+                    case 1:
+                        _this.review_period = 'Jan';
+                        break;
+                    case 2:
+                        _this.review_period = 'Feb';
+                        break;
+                    case 3:
+                        _this.review_period = 'Mar';
+                        break;
+                    case 4:
+                        _this.review_period = 'Apr';
+                        break;
+                    case 5:
+                        _this.review_period = 'May';
+                        break;
+                    case 6:
+                        _this.review_period = 'Jun';
+                        break;
+                    case 7:
+                        _this.review_period = 'Jul';
+                        break;
+                    case 8:
+                        _this.review_period = 'Aug';
+                        break;
+                    case 9:
+                        _this.review_period = 'Sep';
+                        break;
+                    case 10:
+                        _this.review_period = 'Oct';
+                        break;
+                    case 11:
+                        _this.review_period = 'Nov';
+                        break;
+                    case 12:
+                        _this.review_period = 'Dec';
+                        break;
+                    default:
+                        _this.review_period = 'this month';
+                        break;
                 }
-                else {
-                    _this.review_period = 'this month';
-                }
+            }
+            else {
+                _this.review_period = 'this month';
             }
         })
             .catch(function (error) {
@@ -332,10 +333,11 @@ var HomeComponent = (function () {
         this.workersService.getDailyReviews(this.user.hotel_id)
             .then(function (data) {
             if (data && data.message) {
-                _this.is_review = false;
+                _this.review_period = 'this day';
+                _this.is_review = true;
             }
             else {
-                _this.is_review = true;
+                _this.is_review = false;
                 _this.reviews = data;
             }
             _this.review_period = 'this day';
@@ -350,12 +352,13 @@ var HomeComponent = (function () {
         this.loader = true;
         this.workersService.getWeeklyReviews(this.user.hotel_id)
             .then(function (data) {
-            if (data && data.message) {
-                _this.is_review = false;
+            _this.reviews = data;
+            if (_this.reviews && _this.reviews.message) {
+                _this.is_review = true;
+                _this.review_period = 'this week';
             }
             else {
-                _this.is_review = true;
-                _this.reviews = data;
+                _this.is_review = false;
             }
             _this.review_period = 'this week';
             _this.loader = false;
@@ -369,58 +372,61 @@ var HomeComponent = (function () {
         this.loader = true;
         this.workersService.getMonthlyReviews(this.user.hotel_id)
             .then(function (data) {
-            if (data && data.message) {
-                _this.is_review = false;
+            console.log('Month', data);
+            _this.reviews = data;
+            if (_this.reviews && _this.reviews.message) {
+                _this.review_period = 'this month';
+                _this.is_review = true;
             }
             else {
-                _this.reviews = data;
+                _this.is_review = false;
+            }
+            if (_this.reviews && _this.reviews[0]) {
                 _this.is_review = true;
-                if (_this.reviews && _this.reviews[0]) {
-                    switch (_this.reviews[0].month) {
-                        case 1:
-                            _this.review_period = 'Jan';
-                            break;
-                        case 2:
-                            _this.review_period = 'Feb';
-                            break;
-                        case 3:
-                            _this.review_period = 'Mar';
-                            break;
-                        case 4:
-                            _this.review_period = 'Apr';
-                            break;
-                        case 5:
-                            _this.review_period = 'May';
-                            break;
-                        case 6:
-                            _this.review_period = 'Jun';
-                            break;
-                        case 7:
-                            _this.review_period = 'Jul';
-                            break;
-                        case 8:
-                            _this.review_period = 'Aug';
-                            break;
-                        case 9:
-                            _this.review_period = 'Sep';
-                            break;
-                        case 10:
-                            _this.review_period = 'Oct';
-                            break;
-                        case 11:
-                            _this.review_period = 'Nov';
-                            break;
-                        case 12:
-                            _this.review_period = 'Dec';
-                            break;
-                        default:
-                            _this.review_period = 'this month';
-                            break;
-                    }
+                switch (_this.reviews[0].month) {
+                    case 1:
+                        _this.review_period = 'Jan';
+                        break;
+                    case 2:
+                        _this.review_period = 'Feb';
+                        break;
+                    case 3:
+                        _this.review_period = 'Mar';
+                        break;
+                    case 4:
+                        _this.review_period = 'Apr';
+                        break;
+                    case 5:
+                        _this.review_period = 'May';
+                        break;
+                    case 6:
+                        _this.review_period = 'Jun';
+                        break;
+                    case 7:
+                        _this.review_period = 'Jul';
+                        break;
+                    case 8:
+                        _this.review_period = 'Aug';
+                        break;
+                    case 9:
+                        _this.review_period = 'Sep';
+                        break;
+                    case 10:
+                        _this.review_period = 'Oct';
+                        break;
+                    case 11:
+                        _this.review_period = 'Nov';
+                        break;
+                    case 12:
+                        _this.review_period = 'Dec';
+                        break;
+                    default:
+                        _this.review_period = 'this month';
+                        break;
                 }
-                else {
-                    _this.review_period = 'this month';
-                }
+            }
+            else {
+                _this.review_period = 'this month';
             }
             _this.loader = false;
         })
@@ -433,13 +439,12 @@ var HomeComponent = (function () {
         this.loader = true;
         this.workersService.getYearlyReviews(this.user.hotel_id)
             .then(function (data) {
+            _this.reviews = data;
             if (data && data.message) {
-                _this.is_review = false;
+                _this.review_period = 'this year';
+                _this.is_review = true;
             }
             else {
-                _this.is_review = true;
-                _this.reviews = data;
-                _this.review_period = '';
                 if (_this.reviews && _this.reviews[0]) {
                     _this.review_period = _this.reviews[0].year;
                 }

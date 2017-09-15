@@ -12,6 +12,7 @@ export class FeedbackComponent {
   count:any;
   average:any;
   csv:any;
+  is_review:boolean = false;
   barChartData:any;
   constructor(private auth: Auth, private workersService:WorkersService) {
     this.workersService.getReviewsGraph(this.user.hotel_id)
@@ -29,6 +30,11 @@ export class FeedbackComponent {
     this.workersService.getReviews(this.user.hotel_id)
       .then(data=>{
         this.reviews = data;
+        if(this.reviews && this.reviews[0]){
+          this.is_review = false;
+        }else if(this.reviews.message){
+          this.is_review = true;
+        }
         console.log('REVIEWS',this.reviews);
         })
       .catch(error=>{

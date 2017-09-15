@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Auth }      from './auth.service';
 import { AuthHttp }  from 'angular2-jwt';
-import { Http }      from '@angular/http';
+import { Http, Response }      from '@angular/http';
 import 'rxjs/add/operator/map';
 import { Angular2Csv }  from 'angular2-csv';
 import { WorkersService } from './providers/workers.service';
@@ -47,6 +47,16 @@ export class AdminWorkers {
   pagedItems: any[];
   tippers:any;
   errorMessage:any;
+  successMessage:any;
+  file:any;
+  csvUrl:any;
+  csvData: any[] = [];
+  emails:any[]=[];
+  email_taken:any;
+  checked_emails:any[]=[];
+  empty_file:any = "Please select a CSV file to upload employees";
+  workers_hotel:any;
+  dropdown_hotels:any;
   constructor(private auth: Auth, 
   private http: Http,
   private workerService: WorkersService,
@@ -77,12 +87,114 @@ export class AdminWorkers {
     this.hotelService.getHotels()
           .then(data2 => {
           this.hotels = data2;
+          this.dropdown_hotels=data2;
             console.log(data2);
+            
+            this.dropdown_hotels.unshift({id:'none', name:'Please Select Hotel'});
+            this.workers_hotel = this.dropdown_hotels[0].id;
             this.loader = false;        
           });
   }
 
+extractData(res: any) {
+    var lines=res.split("\n");
+    var result = [];
+    var headers=lines[0].split(",");
+    this.emails = [];
+
+  for(var i=1;i < lines.length - 1;i++){
+      var obj = {};
+      var currentline=lines[i].split(",");
+      for(var j=0;j<headers.length;j++){
+          obj[headers[j]] = currentline[j];
+      }
+      result.push(obj);
+  }
+  this.csvData = result; //JavaScript object
   
+  for (var i=0; i< this.csvData.length; i++){
+    if(!this.csvData[i].email){
+      this.empty_file = "Email is required in CSV.";
+    }
+    this.emails.push(this.csvData[i].email);
+  }
+  
+  for(var i = 0; i <= this.emails.length; i++) {
+        for(var j = i; j <= this.emails.length; j++) {
+            if(i != j && this.emails[i] == this.emails[j]) {
+                this.empty_file = "CSV contains duplicate emails";
+            }
+        }
+    }
+
+
+    console.log(this.emails);
+}
+handleHotelSelect(){
+  if(this.workers_hotel == 'none'){
+        this.empty_file = "Please select hotel";
+  }else{
+    this.empty_file ="";
+  }
+}
+handleFileSelect(evt) {
+      var files = evt.target.files; // FileList object
+      var file = files[0];
+      var reader = new FileReader();
+
+      if(!file){
+          this.empty_file = "Please select a CSV file to upload employees";
+      }
+      else{
+        this.empty_file ="";
+        this.handleHotelSelect();
+      reader.readAsText(file);
+      reader.onload = (event:any) => {
+        var csv = event.target.result; // Content of CSV file
+        //console.log(event.target.result);
+        this.extractData(csv); //Here you can call the above function.
+      }
+    }
+}
+
+checkEmp(){
+      console.log(this.csvData);
+
+  var emails =  this.emails.join();
+  this.loader = true;
+  this.errorMessage = '';
+  this.successMessage = '';
+  this.checked_emails = [];
+  this.workerService.checkEmp(emails)
+  .then((data:any) =>{
+    if(data.length > 0){
+      for(var i=0; i<data.length; i++){
+        this.checked_emails.push(data[i].email);
+      }
+      this.loader = false;
+    }
+    else{
+      this.workerService.bulkEmp(this.csvData, this.workers_hotel)
+      .then((data1:any)=>{
+        console.log(data1);
+        this.successMessage = 'Employees added successfully';
+        this.loader = false;
+      })
+      .catch((error1:any)=>{
+        this.errorMessage = 'Cannot add employees! One or more emails in data are already exist in Dwolla';
+        console.log(this.errorMessage);
+        
+        this.loader = false;
+
+      });
+    }
+  })
+  .catch((error:any)=>{
+    console.log(error);
+    this.loader = false;
+  });
+}
+
 
   updateWorker(worker_Id,status){
     this.loader=true;
@@ -209,7 +321,6 @@ export class AdminWorkers {
     this.name = this.f_name + " " + this.l_name;
     if(!this.l_name || !this.f_name || !this.email || this.hotel_id == "none" || !this.login_type){
       this.errorMessage = 'Please fill all fields correctly';
-      console.log(this.errorMessage);
     }else{
         this.loader=true;
         this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.dept_selected)

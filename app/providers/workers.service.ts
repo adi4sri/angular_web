@@ -27,6 +27,36 @@ export class WorkersService {
     
   }
 
+  checkEmp(emails){
+    var json = { emails: emails};
+    var params = json;
+    return new Promise(resolve=>{
+      this.http.post(this.url + 'users/check_workers',json, this.options)
+      .map((res:any) => res.json())
+      .subscribe((data:any)=>{
+        resolve(data)
+      });
+    });
+  }
+
+  bulkEmp(workers, hotel_id){
+    var postData={
+      workers:workers,
+      hotel_id:hotel_id
+    };
+    return new Promise((resolve,reject)=>{
+      this.http.post(this.url + 'users/worker/bulk', postData, this.options)
+        .map((res:any)=>res.json())
+        .subscribe((data:any)=>{
+          resolve(data)
+        },
+        (error:any)=>{
+          reject(error);
+        }
+        );
+    });
+  }
+
   getReviews(id){
     return new Promise(resolve => {
       this.http.get(this.url + 'reviews/review/' + id)

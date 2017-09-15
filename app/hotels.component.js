@@ -173,29 +173,36 @@ var HotelsPage = (function () {
     HotelsPage.prototype.submitHotel = function () {
         var _this = this;
         this.loader = true;
-        this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail)
-            .then(function (data) {
-            console.log("data", data);
-            // refresh hotel list  
-            _this.hotelService.getHotels()
-                .then(function (data2) {
-                _this.hotels = data2;
-                _this.setPage(1);
-                console.log(data2);
+        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail) {
+            this.errorMessage = 'Please fill all the fields correctly';
+            this.loader = false;
+        }
+        else {
+            this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail)
+                .then(function (data) {
+                console.log("data", data);
+                // refresh hotel list  
+                _this.hotelService.getHotels()
+                    .then(function (data2) {
+                    _this.hotels = data2;
+                    _this.setPage(1);
+                    console.log(data2);
+                    _this.loader = false;
+                }); // close refresh
+                _this.hotelForm = false;
+                $('#addHotelModal').modal('hide');
+                _this.hotelName = '';
+                _this.hotelCity = '';
+                _this.hotelAddress = '';
+                _this.hotelZip = '';
+                _this.hotelEmail = '';
+            })
+                .catch(function (error) {
+                console.log(error);
+                _this.errorMessage = 'Account with this email already exist';
                 _this.loader = false;
-            }); // close refresh
-            _this.hotelForm = false;
-            $('#addHotelModal').modal('hide');
-            _this.hotelName = '';
-            _this.hotelCity = '';
-            _this.hotelAddress = '';
-            _this.hotelZip = '';
-            _this.hotelEmail = '';
-        })
-            .catch(function (error) {
-            console.log(error);
-            _this.loader = false;
-        });
+            });
+        }
     };
     HotelsPage.prototype.downloadCSV = function () {
         var options = {

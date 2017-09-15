@@ -676,3 +676,10 @@ border:1px solid #979797!important;}
   position: relative;
   top: 6px;
 }
+.select_hotel{
+  padding:5px;
+  background: #ffffff;
+}
+.select_hotel option{font-size: 18px;}
+#fileInput{padding: 5px;}
+.emp_upload_btn button{width:100%;}

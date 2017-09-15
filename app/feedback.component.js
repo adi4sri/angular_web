@@ -19,6 +19,7 @@ var FeedbackComponent = (function () {
         this.auth = auth;
         this.workersService = workersService;
         this.user = JSON.parse(localStorage.getItem('admin'));
+        this.is_review = false;
         // barChart
         /*public barChartDataTable:Array<any> = [
           {data: this.barChartData}
@@ -69,6 +70,12 @@ var FeedbackComponent = (function () {
         this.workersService.getReviews(this.user.hotel_id)
             .then(function (data) {
             _this.reviews = data;
+            if (_this.reviews && _this.reviews[0]) {
+                _this.is_review = false;
+            }
+            else if (_this.reviews.message) {
+                _this.is_review = true;
+            }
             console.log('REVIEWS', _this.reviews);
         })
             .catch(function (error) {
