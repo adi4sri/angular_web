@@ -177,8 +177,14 @@ checkEmp(){
       this.workerService.bulkEmp(this.csvData, this.workers_hotel)
       .then((data1:any)=>{
         console.log(data1);
-        this.successMessage = 'Employees added successfully';
-        this.loader = false;
+        this.workerService.getAllWorkers()
+          .then((data2:any) => {
+            console.log(data2);
+            this.workers = data2;
+            this.successMessage = 'Employees added successfully';
+            this.loader=false;      
+          });
+
       })
       .catch((error1:any)=>{
         this.errorMessage = 'Cannot add employees! One or more emails in data are already exist in Dwolla';

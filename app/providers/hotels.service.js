@@ -98,7 +98,7 @@ var HotelsService = (function () {
             });
         });
     };
-    HotelsService.prototype.postHotel = function (hotelName, hotelCity, hotelAddress, hotelZip, hotelEmail) {
+    HotelsService.prototype.postHotel = function (hotelName, hotelCity, hotelAddress, hotelZip, hotelEmail, hotelEmployee) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var json = {
@@ -106,7 +106,8 @@ var HotelsService = (function () {
                 city: hotelCity,
                 address: hotelAddress,
                 zip_code: hotelZip,
-                contact_email: hotelEmail
+                contact_email: hotelEmail,
+                emp_name: hotelEmployee
             };
             var params = json;
             _this.http.post(_this.url, params, _this.options)

@@ -173,12 +173,12 @@ var HotelsPage = (function () {
     HotelsPage.prototype.submitHotel = function () {
         var _this = this;
         this.loader = true;
-        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail) {
+        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelEmployee) {
             this.errorMessage = 'Please fill all the fields correctly';
             this.loader = false;
         }
         else {
-            this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail)
+            this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee)
                 .then(function (data) {
                 console.log("data", data);
                 // refresh hotel list  

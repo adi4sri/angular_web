@@ -142,7 +142,9 @@ export class HomeComponent {
               tension:0
             };
             this.lineChartMonthlyData.push(data2);
+            
           }
+            console.log(this.lineChartMonthlyData);
           })
         .catch(error=>{
           console.log(error);

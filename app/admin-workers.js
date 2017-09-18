@@ -140,8 +140,13 @@ var AdminWorkers = (function () {
                 _this.workerService.bulkEmp(_this.csvData, _this.workers_hotel)
                     .then(function (data1) {
                     console.log(data1);
-                    _this.successMessage = 'Employees added successfully';
-                    _this.loader = false;
+                    _this.workerService.getAllWorkers()
+                        .then(function (data2) {
+                        console.log(data2);
+                        _this.workers = data2;
+                        _this.successMessage = 'Employees added successfully';
+                        _this.loader = false;
+                    });
                 })
                     .catch(function (error1) {
                     _this.errorMessage = 'Cannot add employees! One or more emails in data are already exist in Dwolla';

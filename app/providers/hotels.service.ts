@@ -99,14 +99,15 @@ export class HotelsService {
     });
   }
 
-    postHotel(hotelName, hotelCity, hotelAddress, hotelZip, hotelEmail) {
+    postHotel(hotelName, hotelCity, hotelAddress, hotelZip, hotelEmail, hotelEmployee) {
     return new Promise((resolve,reject) => {
     var json = { 
       name: hotelName, 
       city: hotelCity, 
       address:hotelAddress,
       zip_code: hotelZip, 
-      contact_email: hotelEmail
+      contact_email: hotelEmail,
+      emp_name: hotelEmployee
     };
     var params = json;
     this.http.post(this.url,

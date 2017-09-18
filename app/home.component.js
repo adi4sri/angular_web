@@ -263,6 +263,7 @@ var HomeComponent = (function () {
                 };
                 _this.lineChartMonthlyData.push(data2);
             }
+            console.log(_this.lineChartMonthlyData);
         })
             .catch(function (error) {
             console.log(error);

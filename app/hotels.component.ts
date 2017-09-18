@@ -29,6 +29,7 @@ export class HotelsPage {
   hotelAddress: any;
   hotelZip: any;
   hotelEmail: any;
+  hotelEmployee: any;
   workers:any;
   searchHotel:any;
   selectAll:Boolean = false;
@@ -207,12 +208,12 @@ console.log(this.user);
   //add worker to allowed workers list for signup - need to put in real hotel_id here
   submitHotel() {
     this.loader = true;
-    if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail){
+    if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelEmployee){
       this.errorMessage = 'Please fill all the fields correctly';
       this.loader = false;       
     }
     else{
-        this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail)
+        this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee)
           .then(data => {
             console.log("data",data);
           // refresh hotel list  
