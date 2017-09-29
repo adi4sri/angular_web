@@ -44,6 +44,7 @@ export class WorkersPage {
   tippers:any;
   updateForm:boolean;
   errorMessage:any;
+  bankInfo:any;
   constructor(private auth: Auth, 
   private http: Http,
   private workerService: WorkersService,
@@ -51,7 +52,6 @@ export class WorkersPage {
   private pagerService: PagerService,
   private hotelService: HotelsService) {
     this.id= this.user.id;
-      console.log('user',this.id);
     this.worker=[];
     this.workerService.workerDetails(this.id)
       .then(data =>{
@@ -65,17 +65,33 @@ export class WorkersPage {
     this.workerService.getWorkers(this.user.hotel_id)
     .then(data => {
       this.workers = data;
+      console.log(this.workers);
       this.setPage(1);
       this.loader=false;
-      console.log(data);
       });
 
     this.hotelService.getHotels()
           .then(data2 => {
           this.hotels = data2;
-            console.log(data2);
             this.loader = false;        
           });
+
+
+}
+
+  search_worker(){
+    this.loader=true;
+    this.workerService.searchWorker(this.searchWorker)
+      .then((data:any)=>{
+        this.workers = data;
+        this.loader=false;
+        if(data.length > 0){
+          this.setPage(1);
+        }
+      })
+      .catch((error:any)=>{
+        this.loader = false;
+      });
   }
 
   setPage(page: number) {
@@ -88,9 +104,7 @@ export class WorkersPage {
  
         // get current page of items
         this.pagedItems = this.workers.slice(this.pager.startIndex, this.pager.endIndex + 1);
-        console.log(this.pager);
-        console.log(this.pagedItems);
-        console.log(this.tippers);
+        
 
     }
 
@@ -111,7 +125,6 @@ export class WorkersPage {
     }else{
      this.workerId.push(value); 
     }
-     console.log('saalim',this.workerId)
   }
 
   selectAllId(){
@@ -128,7 +141,6 @@ export class WorkersPage {
         }
       }
     this.isCheckedAll = !this.isCheckedAll;
-    console.log('saalim1',this.workerId);
   }
 
 
@@ -146,12 +158,10 @@ export class WorkersPage {
     .then(data =>{
       this.workers = data;
       this.loader=false;
-      console.log('data');
       this.workerService.getWorkers(this.user.hotel_id)
         .then(data => {
         this.workers = data;
         this.setPage(1);
-          console.log(data);   
           this.loader = false;     
         });// close refresh
 
@@ -171,7 +181,6 @@ export class WorkersPage {
      this.workerService.workerDetails(id)
       .then(data =>{
         this.worker = data[0];
-        console.log('Worker',this.worker);
         })
       .catch(error=>{
         console.log(error);
@@ -183,9 +192,8 @@ export class WorkersPage {
 
   updateWorkerInfo(){
     this.loader = true;
-    this.workerService.updateWorkerInfo(this.worker.name, this.worker.email, this.worker.id, this.worker.department, this.worker.status)
+    this.workerService.updateWorkerInfo(this.worker.name, this.worker.email, this.worker.id, this.worker.department, this.worker.status, this.worker.login_type)
       .then(result=>{
-          console.log(result);  
           this.workerService.getWorkers(this.user.hotel_id)
           .then(data => {
           this.workers = data;
@@ -205,6 +213,9 @@ export class WorkersPage {
       .then(data => {
           this.send_success = 'Email has been sent successfully!';
           this.loader = false;
+          setTimeout(function(){
+            document.getElementById("send_success").style.display = 'none';
+          },3000);
         })
       .catch(error => {
         console.log(error);
@@ -225,14 +236,12 @@ export class WorkersPage {
     }else{
     this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
       .then(data2 => {
-        console.log(data2);
         // refresh pending worker list for display
         this.workerService.getWorkers(this.user.hotel_id)
         .then(data => {
         this.workers = data;
         this.setPage(1);
         this.loader=false;
-            console.log(data);        
         });  
         $('#addEmpModal').modal('hide');
         this.f_name='';
@@ -252,24 +261,20 @@ export class WorkersPage {
   }
 
   downloadCSV(){
-    var options = {
-      showLabels: true
-    };
-    var emp = this.workers;
-    for(var i=0; i < emp.length; i++){
-      delete emp[i].account_balance;
-      delete emp[i].account_creation;
-      delete emp[i].age;
-      delete emp[i].auth_id;
-      delete emp[i].cust_id;
-      delete emp[i].hotel_id;
-      delete emp[i].id;
-      delete emp[i].password_reset_token;
-      delete emp[i].password_token_expires;
-      delete emp[i].social_id;
-      delete emp[i].social_type;
-      delete emp[i].password;
+    let emp = [];
+    
+    for(var i=0; i < this.workers.length; i++){
+      emp.push({
+        name:this.workers[i].name,
+        login_type:this.workers[i].login_type=='0'?'Manager':'Employee',
+        email:this.workers[i].email,
+        department:this.workers[i].department,
+        status:this.workers[i].status=='0'?'Inactive':'Active',
+        activity:this.workers[i].activity,
+        hotel_name:this.workers[i].hotel_name
+      });
     }
+    
     new Angular2Csv(emp, 'Employees',{ headers: Object.keys(emp[0]) });
   }
 };

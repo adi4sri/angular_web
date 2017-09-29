@@ -323,7 +323,7 @@ h2,.h2{font-size:20px!important;}
   outline: none;
 }
 .mtl-select option{
-  font-size:16px;
+  font-size:24px;
 }
 
 #profile input, #profile .bar{
@@ -683,3 +683,18 @@ border:1px solid #979797!important;}
 .select_hotel option{font-size: 18px;}
 #fileInput{padding: 5px;}
 .emp_upload_btn button{width:100%;}
+
+#privacy p,
+#privacy ul li,
+#privacy p u,
+#privacy p b,
+#privacy h3,
+#terms p,
+#terms ul li,
+#terms .c0, #terms .c2, #terms .c1, #terms .c6{
+  font-size:12px!important;
+  font-family: 'Sinkin Sans', sans-serif!important;
+}
+#terms .c2{
+  font-weight: bold;
+}

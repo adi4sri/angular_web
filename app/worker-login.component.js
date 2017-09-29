@@ -18,15 +18,66 @@ var workers_service_1 = require("./providers/workers.service");
 require("rxjs/add/operator/map");
 var WorkerLoginComponent = (function () {
     function WorkerLoginComponent(auth, http, authHttp, router, workersService) {
+        var _this = this;
         this.auth = auth;
         this.http = http;
         this.authHttp = authHttp;
         this.router = router;
         this.workersService = workersService;
         this.user = JSON.parse(localStorage.getItem('admin'));
+        this.user_role = JSON.parse(localStorage.getItem('user_roles2'));
         this.loader = false;
+        /*if(auth.authenticated()){
+          if(this.user.login_type=='0'){
+              this.router.navigate(["/home"]);
+            }
+           else if (this.user.login_type=='1'){
+             this.router.navigate(["/settings"]);
+           }
+          }   */
         if (auth.authenticated()) {
-            this.router.navigate(["/home"]);
+            this.workersService.getBankInfo(this.user.id)
+                .then(function (data1) {
+                console.log(data1);
+                if ((data1['funding-sources'][0] && _this.user.login_type == '1' && _this.user.user_roles_worker.dashboard == true) || _this.user.login_type == '0') {
+                    _this.router.navigate(["/home"]);
+                    console.log('Login', JSON.parse(localStorage.getItem("admin")));
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else if (_this.user.user_roles_worker.tip_employee == true && _this.user.login_type == '1' && data1['funding-sources'][0]) {
+                    _this.router.navigate(["/employee_tips"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else if (_this.user.user_roles_worker.tip_comparison == true && _this.user.login_type == '1' && data1['funding-sources'][0]) {
+                    _this.router.navigate(["/tip_comparison"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else if (!data1['funding-sources'][0]) {
+                    _this.router.navigate(["/bank-info"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else {
+                    _this.router.navigate(["/settings"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                //setTimeout(function(){ window.location.reload(); }, 100);
+                _this.loader = false;
+            })
+                .catch(function (error) {
+                console.log(error);
+                //  window.location.reload();    
+                _this.loader = false;
+            });
         }
     }
     WorkerLoginComponent.prototype.loginUser = function () {
@@ -41,14 +92,37 @@ var WorkerLoginComponent = (function () {
             localStorage.setItem("user_roles2", JSON.stringify(data.user_roles_worker));
             _this.workersService.getBankInfo(data.id)
                 .then(function (data1) {
-                if ((data1['funding-sources'][0] && data.login_type == '1') || data.login_type == '0') {
+                console.log(data1);
+                if ((data1['funding-sources'][0] && data.login_type == '1' && data.user_roles_worker.dashboard == true) || data.login_type == '0') {
                     _this.router.navigate(["/home"]);
                     console.log('Login', JSON.parse(localStorage.getItem("admin")));
-                    window.location.reload();
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else if (data.user_roles_worker.tip_employee == true && data.login_type == '1' && data1['funding-sources'][0]) {
+                    _this.router.navigate(["/employee_tips"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else if (data.user_roles_worker.tip_comparison == true && data.login_type == '1' && data1['funding-sources'][0]) {
+                    _this.router.navigate(["/tip_comparison"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
+                }
+                else if (!data1['funding-sources'][0]) {
+                    _this.router.navigate(["/bank-info"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
                 }
                 else {
-                    _this.router.navigate(["/bank-info"]);
-                    window.location.reload();
+                    _this.router.navigate(["/settings"]);
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 100);
                 }
                 //setTimeout(function(){ window.location.reload(); }, 100);
                 _this.loader = false;

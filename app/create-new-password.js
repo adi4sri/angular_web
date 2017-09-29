@@ -24,32 +24,41 @@ var CreateNewPassword = (function () {
         this.workersService = workersService;
         this.route = route;
         this.router = router;
+        this.loader = false;
     }
     CreateNewPassword.prototype.signUp = function () {
         var _this = this;
         if (this.password.length < 8) {
-            this.errorMessage = 'Password must be atleast 8 characters long!';
+            this.errMessage = 'Password must be at least 8 characters long!';
         }
         else if (this.password != this.password2) {
-            this.errorMessage = 'Password did not matched!';
+            this.errMessage = 'Password did not matched!';
         }
         else {
             //this.token = this.route.snapshot.params['token'];
+            this.loader = true;
             this.workersService.workerSignup(this.email, this.password2)
                 .then(function (data) {
                 setTimeout(function (router) {
                     _this.router.navigate(["/worker-login"]);
                 }, 100);
-                _this.errorMessage = '';
+                _this.success = "Account has been set up. Go to login page to access bTIPt account.";
+                delete _this.errorMessage;
+                console.log(_this.success);
+                _this.loader = false;
             })
                 .catch(function (error) {
-                if (error._body.message) {
-                    _this.errorMessage = JSON.parse(error._body.message);
-                }
-                else {
-                    _this.errorMessage = "Invaild Request. Please contact adminstrator, if you are lost.";
-                    console.log(_this.errorMessage);
-                }
+                //if(error._body.message){
+                _this.errorMessage = JSON.parse(error._body);
+                console.log(error);
+                console.log(_this.errorMessage);
+                _this.loader = false;
+                //}
+                /*else{
+                    this.errorMessage = error.error;
+                    console.log(error);
+                    this.loader = false;
+                }*/
             });
         }
     };

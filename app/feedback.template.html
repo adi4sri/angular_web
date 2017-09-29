@@ -2,7 +2,7 @@
     <a (click)="downloadCSV()"><i class="fa fa-exchange export"></i> Export</a>
     </div>
 
-    <div class="padding">
+    <div class="padding" *ngIf="user.login_type=='0'">
       <div class="col-md-6 review-stars review-graph padding" >
         <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 0}"></span>
         <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 1}"></span>
@@ -40,5 +40,46 @@
       <div *ngIf="is_review">No review yet</div>
                 
       </div>
+    </div>
+
+
+    <div class="padding" *ngIf="user.login_type=='1'">
+      <div class="col-md-6 review-stars review-graph padding" >
+        <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 0}"></span>
+        <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 1}"></span>
+        <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 2}"></span>
+        <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 3}"></span>
+        <span class="glyphicon" [ngClass]="{'glyphicon-star': average > 4}"></span>
+            {{count}} reviews <br> {{average}} out of 5 stars
+        <div style="display: block;" *ngIf="barChartDataEmp && barChartDataEmp[0]">
+        <canvas baseChart width="400" height="400"
+                    [datasets]="barChartDataEmp"
+                    [labels]="barChartLabels"
+                    [options]="barChartOptions"
+                    [colors]="barChartColors"
+                    [legend]="barChartLegend"
+                    [chartType]="barChartType"
+                    (chartHover)="chartHovered($event)"
+                    (chartClick)="chartClicked($event)"></canvas>
+        </div>
+
+      </div>
+     <!--  <div class="col-md-6 dash-list" >
+      <h2>Top Comments</h2>
+      <br>
+      <div *ngIf="!is_review">
+        <div *ngFor="let review of reviews">
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>0, 'glyphicon-star-empty':review.rating<1 }" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>1, 'glyphicon-star-empty':review.rating<2}" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>2, 'glyphicon-star-empty':review.rating<3}" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>3, 'glyphicon-star-empty':review.rating<4}" ></span>
+          <span class="glyphicon" [ngClass]="{'glyphicon-star':review.rating>4, 'glyphicon-star-empty':review.rating<5}" ></span>
+          <p>{{review.comment}}</p>
+        </div>
+      </div>
+
+      <div *ngIf="is_review">No review yet</div>
+                
+      </div> -->
     </div>
 

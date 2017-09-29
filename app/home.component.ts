@@ -49,10 +49,12 @@ export class HomeComponent {
   noDeptError:any;
 
   constructor(private auth: Auth, private tipsService: TipsService, private hotelsService: HotelsService, private workersService: WorkersService, private router: Router) {
-  console.log(this.user.login_type);
   if(this.user && this.user.user_type == 'admin'){
    this.router.navigate(['/hotels']) ;
   }
+
+  console.log(this.user);
+
      this.loader = true;
     this.tipsService.top_tipped_emp(this.user.hotel_id)
           .then((data:any) =>{
@@ -78,7 +80,6 @@ export class HomeComponent {
             }
             this.loader = false;
 
-            console.log('toppedEmp', this.topped_emp);
             })
           .catch(error=>{
             console.log(error);
@@ -86,7 +87,6 @@ export class HomeComponent {
     
     this.workersService.getMonthlyReviews(this.user.hotel_id)
           .then((data:any)=>{
-            console.log('Month',data);
             this.reviews = data;
             if(this.reviews && this.reviews.message){
               this.review_period = 'this month';
@@ -121,17 +121,20 @@ export class HomeComponent {
             });
 
     //houseData=[];
-    this.tipsService.dashboard(this.user.hotel_id)
-      .then((data2:any) => {
-      this.tips = data2;
-        this.show = true;
-      });
+
     
     this.tipsService.chart()
       .then(data =>{
         this.tipData = data;
         });
 
+  if(this.user.login_type == '0'){
+    this.tipsService.dashboard(this.user.hotel_id)
+      .then((data2:any) => {
+      this.tips = data2;
+        this.show = true;
+      });
+      
       this.tipsService.monthly_chart_data(this.user.hotel_id)
         .then(data1 =>{
           this.chart_data = data1;
@@ -144,12 +147,10 @@ export class HomeComponent {
             this.lineChartMonthlyData.push(data2);
             
           }
-            console.log(this.lineChartMonthlyData);
           })
         .catch(error=>{
           console.log(error);
           });
-
 
         this.tipsService.weekly_chart_data(this.user.hotel_id)
         .then(data1 =>{
@@ -164,14 +165,24 @@ export class HomeComponent {
 
             this.lineChartWeeklyData.push(data2);
           }
-         for(let j = 1; j<=52; j++){this.weeks.push('Week '+j);}
+         for(let j = 0; j<=6; j++){
+           switch(j){
+             case 0: this.weeks.push('Sunday'); break;
+             case 1: this.weeks.push('Monday'); break;
+             case 2: this.weeks.push('Tuesday'); break;
+             case 3: this.weeks.push('Wednesday'); break;
+             case 4: this.weeks.push('Thurday'); break;
+             case 5: this.weeks.push('Friday'); break;
+             case 6: this.weeks.push('Saturday'); break;
+           }
+         }
             this.lineChartWeeklyLabels = this.weeks;
           })
         .catch(error=>{
           console.log(error);
           });
 
-        this.tipsService.yearly_chart_data(this.user.hotel_id)
+         this.tipsService.yearly_chart_data(this.user.hotel_id)
         .then(data1 =>{
             this.years=[];
           this.year_data = data1;
@@ -211,8 +222,110 @@ export class HomeComponent {
         .catch(error=>{
           console.log(error);
           });
+      }
 
-        }
+  if(this.user.login_type == '1'){
+      this.tipsService.workerTipsComparison(this.user.id)
+        .then((data:any)=>{
+          this.show = true;
+          this.tips = data;
+
+        })
+        .catch((error:any)=>{
+          console.log(error);
+        });
+      this.tipsService.emp_monthly_chart(this.user.id)
+            .then((data:any)=>{
+              this.chart_data = data;
+              for (let key in this.chart_data){
+                var data2={
+                  data:this.chart_data[key],
+                  label:key,
+                  tension:0
+                };
+                this.lineChartMonthlyData.push(data2);
+                
+              }
+            })
+            .catch((error:any)=>{
+              console.log(error);
+            });
+
+      this.tipsService.emp_weekly_chart(this.user.id)
+        .then(data1 =>{
+            this.weeks=[];
+          this.week_data = data1;
+          for (let key in this.week_data){
+            var data2={
+              data:this.week_data[key],
+              label:key,
+              tension:0
+            }
+
+            this.lineChartWeeklyData.push(data2);
+          }
+         for(let j = 0; j<=6; j++){
+           switch(j){
+             case 0: this.weeks.push('Sunday'); break;
+             case 1: this.weeks.push('Monday'); break;
+             case 2: this.weeks.push('Tuesday'); break;
+             case 3: this.weeks.push('Wednesday'); break;
+             case 4: this.weeks.push('Thurday'); break;
+             case 5: this.weeks.push('Friday'); break;
+             case 6: this.weeks.push('Saturday'); break;
+           }
+         }
+            this.lineChartWeeklyLabels = this.weeks;
+          })
+        .catch(error=>{
+          console.log(error);
+          });
+
+        this.tipsService.emp_yearly_chart(this.user.id)
+        .then(data1 =>{
+            this.years=[];
+          this.year_data = data1;
+          for (let key in this.year_data){
+            var data2={
+              data:this.year_data[key],
+              label:key,
+              tension:0
+            }
+
+            this.lineChartYearlyData.push(data2);
+          }
+
+          var d = new Date();
+          var n = d.getFullYear();
+         for(let j = 2012; j<=n; j++){this.years.push(j);}
+            this.lineChartYearlyLabels = this.years;
+         })
+        .catch(error=>{
+          console.log(error);
+          });
+        
+        this.tipsService.emp_daily_chart(this.user.id)
+        .then(data1 =>{
+            this.days=[];
+          this.day_data = data1;
+          for (let key in this.day_data){
+            var data2={
+              data:this.day_data[key],
+              label:key,
+              tension:0
+            }
+
+            this.lineChartDailyData.push(data2);
+          }
+            this.lineChartDailyLabels = ['Today'];
+         })
+        .catch(error=>{
+          console.log(error);
+          });
+
+   }
+
+}
 
   top_review_daily(){
   this.loader = true;
@@ -256,7 +369,6 @@ export class HomeComponent {
   this.loader = true;
   this.workersService.getMonthlyReviews(this.user.hotel_id)
           .then((data:any)=>{
-         console.log('Month',data);
             this.reviews = data;
             if(this.reviews && this.reviews.message){
               this.review_period = 'this month';
@@ -264,32 +376,32 @@ export class HomeComponent {
             }else{
                 this.is_review = false;
             }
-            if(this.reviews && this.reviews[0]){ 
-              this.is_review = true;
+            
+            if(this.reviews && this.reviews[0]){
               switch (this.reviews[0].month){
-                case 1: this.review_period = 'Jan'; break;
-                case 2: this.review_period = 'Feb'; break;
-                case 3: this.review_period = 'Mar'; break;
-                case 4: this.review_period = 'Apr'; break;
-                case 5: this.review_period = 'May'; break;
-                case 6: this.review_period = 'Jun'; break;
-                case 7: this.review_period = 'Jul'; break;
-                case 8: this.review_period = 'Aug'; break;
-                case 9: this.review_period = 'Sep'; break;
-                case 10: this.review_period = 'Oct'; break;
-                case 11: this.review_period = 'Nov'; break;
-                case 12: this.review_period = 'Dec'; break;
-                default: this.review_period = 'this month';break;
+                  case 1: this.review_period = 'Jan'; break;
+                  case 2: this.review_period = 'Feb'; break;
+                  case 3: this.review_period = 'Mar'; break;
+                  case 4: this.review_period = 'Apr'; break;
+                  case 5: this.review_period = 'May'; break;
+                  case 6: this.review_period = 'Jun'; break;
+                  case 7: this.review_period = 'Jul'; break;
+                  case 8: this.review_period = 'Aug'; break;
+                  case 9: this.review_period = 'Sep'; break;
+                  case 10: this.review_period = 'Oct'; break;
+                  case 11: this.review_period = 'Nov'; break;
+                  case 12: this.review_period = 'Dec'; break;
+                  default: this.review_period = 'this month'; break;
+                }
               }
-            }
-            else{
-            this.review_period = 'this month';
-            }
-           
-            this.loader = false;
+              else{
+                this.review_period = 'this month';
+              }
+              this.loader = false;
             })
           .catch(error=>{
             console.log(error);
+            this.loader = false;
             });
     }
 
@@ -328,7 +440,6 @@ export class HomeComponent {
               this.period = 'this year';
             }
             this.loader = false;
-            console.log('toppedEmp', this.topped_emp);
             })
           .catch(error=>{
             console.log(error);
@@ -364,7 +475,6 @@ export class HomeComponent {
            }
             this.loader = false;
 
-            console.log('toppedEmp', this.topped_emp);
             })
           .catch(error=>{
             console.log(error);
@@ -378,7 +488,6 @@ export class HomeComponent {
             this.topped_emp = data;
             this.period = 'this week';
             this.loader = false;
-            console.log('toppedEmp', this.topped_emp);
             })
           .catch(error=>{
             console.log(error);
@@ -393,7 +502,6 @@ export class HomeComponent {
             this.topped_emp = data;
             this.period = 'this day';
             this.loader = false;
-            console.log('toppedEmp', this.topped_emp);
             })
           .catch(error=>{
             console.log(error);
@@ -438,28 +546,32 @@ export class HomeComponent {
 
   public barChartDailyColors:Array<any> = [
     { // grey
-      backgroundColor: '#65b4ff',
+      backgroundColor: 'transparent',
       borderColor: '#65b4ff',
       pointBackgroundColor: 'transparent',
-      pointBorderColor: 'transparent',
+      pointBorderColor: '#65b4ff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+      borderWidth:3
+
     },
     { // dark grey
-      backgroundColor: '#ac00ff',
+      backgroundColor: 'transparent',
       borderColor: '#ac00ff',
       pointBackgroundColor: 'transparent',
       pointBorderColor: 'transparent',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
+      pointHoverBorderColor: 'rgba(77,83,96,1)',
+      borderWidth:3
     },
     { // grey
-      backgroundColor: '#a4a2a0',
+      backgroundColor: 'transparent',
       borderColor: '#a4a2a0',
       pointBackgroundColor: 'transparent',
       pointBorderColor: 'transparent',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+      borderWidth:3
     }
   ];
 
@@ -491,17 +603,6 @@ export class HomeComponent {
   ];
   public lineChartMonthlyLegend:boolean = true;
   public lineChartMonthlyType:String = 'line';
- 
-/*  public randomize():void {
-    let _lineChartData:Array<any> = new Array(this.lineChartData.length);
-    for (let i = 0; i < this.lineChartData.length; i++) {
-      _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
-      for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-        _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
-      }
-    }
-    this.lineChartData = _lineChartData;
-  }*/
  
   // events
   public chartClicked(e:any):void {

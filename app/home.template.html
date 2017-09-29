@@ -1,4 +1,4 @@
-<div class="row placeholders" style="background-color:#e7e5e5;">
+<div class="row placeholders" style="background-color:#e7e5e5;" *ngIf="user.login_type == '0'">
     <div class="col-xs-6 col-sm-3 dash-top">
         <h2>Total Employees</h2>
         <h3 *ngIf="show">{{tips.employees}}</h3>
@@ -21,26 +21,53 @@
     </div>
 </div>
 
-
-<div class="row padding">
-  <div class="col-md-7 graph-box" >
-  <!-- <div class="row"> -->
-  <div class="" style="margin-top: 10px;">
-    <h4 class="" style="font-weight: bold;display: inline-block;">Total Tips</h4>
-   <ul class="nav nav-tabs graph col-sm-8 pull-right">
-      <li><a data-toggle="tab" href="#day" (click)="top_tipped_daily();top_review_daily()">Day</a></li>
-      <li><a data-toggle="tab" href="#week" (click)="top_tipped_weekly();top_review_weekly()" >Week</a></li>
-      <li class="active"><a data-toggle="tab" href="#month" (click)="top_tipped_monthly();top_review_monthly()" >Month</a></li>
-      <li><a data-toggle="tab" href="#year" (click)="top_tipped_yearly();top_review_yearly()">Year</a></li>
-    </ul>
-  </div>
-    <div *ngIf="!lineChartMonthlyData.length" style="margin-top:10%;">
-      <p>Currently, There is no Department or Tip data available!</p>
+<div class="row placeholders" style="background-color:#e7e5e5;" *ngIf="user.login_type == '1' && tips && tips[0]">
+    <div class="col-xs-12 col-sm-4 dash-top">
+        <h2># of Tips</h2>
+        <h3 *ngIf="show">{{tips[0].count}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>&nbsp;2% from last week</p> -->
     </div>
-    <!-- </div> -->
-    <div class="tab-content">
-        <div id="month" class="tab-pane fade in active">
-                          <canvas *ngIf="lineChartMonthlyData.length" baseChart width="645" height="467"
+    <div class="col-xs-12 col-sm-4 dash-top">
+        <h2>Average Tip</h2>
+        <h3 *ngIf="show">${{tips[0].avg}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>&nbsp;3% from last week</p> -->
+    </div>
+    <div class="col-xs-12 col-sm-4 dash-top">
+        <h2>Total Tips</h2>
+        <h3 *ngIf="show">{{tips[0].total}}</h3>
+        <!-- <p><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span>&nbsp;5% from last week</p> -->
+    </div>
+
+</div>
+
+<div class="row padding" *ngIf="(user.user_type=='worker' && user.login_type=='0') || user.user_type=='admin'">
+  <div class="col-md-7 graph-box" >
+
+  <div class="" style="margin-top: 10px;">
+  <h4 class="" style="font-weight: bold;display: inline-block;">Total Tips</h4>
+  <ul class="nav nav-tabs graph col-sm-8 pull-right">
+    <li>
+      <a data-toggle="tab" href="#day" (click)="top_tipped_daily();top_review_daily()">Day</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#week" (click)="top_tipped_weekly();top_review_weekly()" >Week</a>
+    </li>
+    <li class="active">
+      <a data-toggle="tab" href="#month" (click)="top_tipped_monthly();top_review_monthly()" >Month</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#year" (click)="top_tipped_yearly();top_review_yearly()">Year</a>
+    </li>
+  </ul>
+  </div>
+
+  <div *ngIf="!lineChartMonthlyData.length" style="margin-top:10%;">
+    <p>Currently, There is no Department or Tip data available!</p>
+  </div>
+  
+  <div class="tab-content">
+    <div id="month" class="tab-pane fade in active">
+      <canvas *ngIf="lineChartMonthlyData.length" baseChart width="645" height="467"
                     [datasets]="lineChartMonthlyData"
                     [labels]="lineChartMonthlyLabels"
                     [options]="lineChartMonthlyOptions"
@@ -49,12 +76,9 @@
                     [chartType]="lineChartMonthlyType"
                     (chartHover)="chartHovered($event)"
                     (chartClick)="chartClicked($event)"></canvas>
-                    <!-- <div *ngIf="!lineChartMonthlyData.length">
-                      No Data Available!
-                    </div> -->
-        </div>
-         <div id="day" class="tab-pane fade">
-            <canvas *ngIf="(lineChartDailyData.length) && (lineChartDailyLabels)" baseChart width="645" height="467"
+    </div>
+    <div id="day" class="tab-pane fade">
+      <canvas *ngIf="(lineChartDailyData.length) && (lineChartDailyLabels)" baseChart width="645" height="467"
                     [datasets]="lineChartDailyData"
                     [labels]="lineChartDailyLabels"
                     [options]="barChartOptions"
@@ -63,13 +87,10 @@
                     [chartType]="'bar'"
                     (chartHover)="chartHovered($event)"
                     (chartClick)="chartClicked($event)"></canvas>
-                    <!-- <div *ngIf="!lineChartDailyData.length">
-                      No Data Available!
-                    </div> -->
-        </div>
+    </div>
 
-         <div id="week" class="tab-pane fade">
-            <canvas *ngIf="(lineChartWeeklyData.length) && (lineChartWeeklyLabels)" baseChart width="645" height="467"
+    <div id="week" class="tab-pane fade">
+      <canvas *ngIf="(lineChartWeeklyData.length) && (lineChartWeeklyLabels)" baseChart width="645" height="467"
                     [datasets]="lineChartWeeklyData"
                     [labels]="lineChartWeeklyLabels"
                     [options]="lineChartWeeklyOptions"
@@ -78,13 +99,10 @@
                     [chartType]="lineChartMonthlyType"
                     (chartHover)="chartHovered($event)"
                     (chartClick)="chartClicked($event)"></canvas>
-                    <!-- <div *ngIf="!lineChartWeeklyData.length">
-                      No Data Available!
-                    </div> -->
-        </div>
+    </div>
 
-        <div id="year" class="tab-pane fade">
-            <canvas *ngIf="(lineChartYearlyData.length) && (lineChartYearlyLabels)" baseChart width="645" height="467"
+    <div id="year" class="tab-pane fade">
+      <canvas *ngIf="(lineChartYearlyData.length) && (lineChartYearlyLabels)" baseChart width="645" height="467"
                     [datasets]="lineChartYearlyData"
                     [labels]="lineChartYearlyLabels"
                     [options]="lineChartWeeklyOptions"
@@ -93,56 +111,115 @@
                     [chartType]="lineChartMonthlyType"
                     (chartHover)="chartHovered($event)"
                     (chartClick)="chartClicked($event)"></canvas>
-                    <!-- <div *ngIf="!lineChartYearlyData.length">
-                      No Data Available!
-                    </div> -->
-        </div>
+    </div>
 
-        </div>
+  </div>
+  </div>
+
+  <div class="col-md-5 dash-list" >
+    <h2 *ngIf="loader">{{loading}}</h2>
+      <div *ngIf="!loader">
+        <h2>Top Tipped Employees</h2>
+        <h4>In {{period}}</h4>
+          <ol *ngIf="topped_emp.length > 0">
+            <li *ngFor="let emp of topped_emp">{{emp.name}}</li>
+          </ol>
+        <div *ngIf="topped_emp.length == 0">No tipping in {{period}}</div>
       </div>
-      <div class="col-md-5 dash-list" >
-          <h2 *ngIf="loader">{{loading}}</h2>
-          <div *ngIf="!loader">
-          <h2>Top Tipped Employees</h2>
-          <h4>In {{period}}</h4>
-            <ol *ngIf="topped_emp.length > 0">
-              <li *ngFor="let emp of topped_emp">{{emp.name}}</li>
-            </ol>
-            <div *ngIf="topped_emp.length == 0">No tipping in {{period}}</div>
-        <!--<button (click)="randomize()">CLICK</button>-->
-        </div>
-      <!-- </div>
-    <div class="col-md-6 dash-list"> -->
-    <div *ngIf="!loader">
-          <h2>Reviews</h2>
-          <div *ngIf="!is_review">
+
+      <div *ngIf="!loader">
+        <h2>Reviews</h2>
+        <div *ngIf="!is_review">
           <h4>In {{review_period}}</h4> 
-          <div *ngFor="let review of reviews" class="review">
-            <span [ngClass]="{'glyphicon-star':review.rating > 0}" class="glyphicon"></span> 
-            <span [ngClass]="{'glyphicon-star':review.rating > 1}" class="glyphicon"></span> 
-            <span [ngClass]="{'glyphicon-star':review.rating > 2}" class="glyphicon"></span> 
-            <span [ngClass]="{'glyphicon-star':review.rating > 3}" class="glyphicon"></span> 
-            <span [ngClass]="{'glyphicon-star':review.rating > 4}" class="glyphicon"></span> 
-            <p class="comment">
+        <div *ngFor="let review of reviews" class="review">
+          <span [ngClass]="{'glyphicon-star':review.rating > 0}" class="glyphicon"></span> 
+          <span [ngClass]="{'glyphicon-star':review.rating > 1}" class="glyphicon"></span> 
+          <span [ngClass]="{'glyphicon-star':review.rating > 2}" class="glyphicon"></span> 
+          <span [ngClass]="{'glyphicon-star':review.rating > 3}" class="glyphicon"></span> 
+          <span [ngClass]="{'glyphicon-star':review.rating > 4}" class="glyphicon"></span> 
+          <p class="comment">
               {{review.comment}}
-            </p>
-          </div>
-          </div>
-          <div *ngIf="is_review">No Reviews in {{review_period}}</div>
-          <!-- <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-                <p>Service was amazing! I loved my stay</p>
-
-                          <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-                <p>My room was very clean. Thanks for everything!</p> -->
-
-        <!--<button (click)="randomize()">CLICK</button>-->
+          </p>
+        </div>
+        </div>
+        <div *ngIf="is_review">No Reviews in {{review_period}}</div>
+         
       </div>
       </div>
     </div>
 
+<div class="row padding">
+<div class="col-md-7 graph-box" *ngIf="user.user_type=='worker' && user.login_type=='1'">
+  <div class="" style="margin-top: 10px;">
+  <h4 class="" style="font-weight: bold;display: inline-block;">Total Tips</h4>
+  <ul class="nav nav-tabs graph col-sm-8 pull-right">
+    <li>
+      <a data-toggle="tab" href="#day" (click)="top_tipped_daily();top_review_daily()">Day</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#week" (click)="top_tipped_weekly();top_review_weekly()" >Week</a>
+    </li>
+    <li class="active">
+      <a data-toggle="tab" href="#month" (click)="top_tipped_monthly();top_review_monthly()" >Month</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#year" (click)="top_tipped_yearly();top_review_yearly()">Year</a>
+    </li>
+  </ul>
+  </div>
+
+  <div *ngIf="!lineChartMonthlyData.length" style="margin-top:10%;">
+    <p>Currently, There is no data available!</p>
+  </div>
+  
+  <div class="tab-content">
+    <div id="month" class="tab-pane fade in active">
+      <canvas *ngIf="lineChartMonthlyData.length" baseChart width="645" height="467"
+                    [datasets]="lineChartMonthlyData"
+                    [labels]="lineChartMonthlyLabels"
+                    [options]="lineChartMonthlyOptions"
+                    [colors]="lineChartMonthlyColors"
+                    [legend]="lineChartMonthlyLegend"
+                    [chartType]="lineChartMonthlyType"
+                    (chartHover)="chartHovered($event)"
+                    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+    <div id="day" class="tab-pane fade">
+      <canvas *ngIf="(lineChartDailyData.length) && (lineChartDailyLabels)" baseChart width="645" height="467"
+                    [datasets]="lineChartDailyData"
+                    [labels]="lineChartDailyLabels"
+                    [options]="barChartOptions"
+                    [colors]="barChartDailyColors"
+                    [legend]="lineChartMonthlyLegend"
+                    [chartType]="'bar'"
+                    (chartHover)="chartHovered($event)"
+                    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+
+    <div id="week" class="tab-pane fade">
+      <canvas *ngIf="(lineChartWeeklyData.length) && (lineChartWeeklyLabels)" baseChart width="645" height="467"
+                    [datasets]="lineChartWeeklyData"
+                    [labels]="lineChartWeeklyLabels"
+                    [options]="lineChartWeeklyOptions"
+                    [colors]="lineChartMonthlyColors"
+                    [legend]="lineChartMonthlyLegend"
+                    [chartType]="lineChartMonthlyType"
+                    (chartHover)="chartHovered($event)"
+                    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+
+    <div id="year" class="tab-pane fade">
+      <canvas *ngIf="(lineChartYearlyData.length) && (lineChartYearlyLabels)" baseChart width="645" height="467"
+                    [datasets]="lineChartYearlyData"
+                    [labels]="lineChartYearlyLabels"
+                    [options]="lineChartWeeklyOptions"
+                    [colors]="lineChartMonthlyColors"
+                    [legend]="lineChartMonthlyLegend"
+                    [chartType]="lineChartMonthlyType"
+                    (chartHover)="chartHovered($event)"
+                    (chartClick)="chartClicked($event)"></canvas>
+    </div>
+
+  </div>
+  </div>
+  </div>

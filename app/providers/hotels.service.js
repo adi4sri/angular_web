@@ -16,15 +16,13 @@ var angular2_jwt_1 = require("angular2-jwt");
 var auth_service_1 = require("../auth.service");
 var HotelsService = (function () {
     function HotelsService(http, authHttp, auth) {
+        //var toke = localStorage.getItem('id_token');
         this.http = http;
         this.authHttp = authHttp;
         this.auth = auth;
         this.url = 'http://13.59.184.105:9000/hotels/';
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.options = new http_1.RequestOptions({ headers: this.headers });
-        //var toke = localStorage.getItem('id_token');
-        console.log(localStorage.getItem('auth_id'));
-        console.log(auth);
         //this.userAuthObj = auth.user;
         //this.authId = this.userAuthObj.user_id.substring(6); //remove auth0 header
     }

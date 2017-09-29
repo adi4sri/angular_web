@@ -50,7 +50,6 @@ export class WorkerTipsComponent {
     this.tipsService.getWorkerTips(this.user.id)
       .then(data2 => {
       this.tips = data2;
-      console.log(this.tips);
       this.setPage(1);
       this.loader = false;
       });
@@ -80,7 +79,6 @@ export class WorkerTipsComponent {
   }
 
   selectAllId(){
-    console.log(this.isCheckedAll);
     this.tipId=[];
     if(this.isCheckedAll){
       this.tipId=[];

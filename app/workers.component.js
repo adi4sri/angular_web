@@ -34,7 +34,6 @@ var WorkersPage = (function () {
         this.loader = false;
         this.pager = {};
         this.id = this.user.id;
-        console.log('user', this.id);
         this.worker = [];
         this.workerService.workerDetails(this.id)
             .then(function (data) {
@@ -46,17 +45,31 @@ var WorkersPage = (function () {
         this.workerService.getWorkers(this.user.hotel_id)
             .then(function (data) {
             _this.workers = data;
+            console.log(_this.workers);
             _this.setPage(1);
             _this.loader = false;
-            console.log(data);
         });
         this.hotelService.getHotels()
             .then(function (data2) {
             _this.hotels = data2;
-            console.log(data2);
             _this.loader = false;
         });
     }
+    WorkersPage.prototype.search_worker = function () {
+        var _this = this;
+        this.loader = true;
+        this.workerService.searchWorker(this.searchWorker)
+            .then(function (data) {
+            _this.workers = data;
+            _this.loader = false;
+            if (data.length > 0) {
+                _this.setPage(1);
+            }
+        })
+            .catch(function (error) {
+            _this.loader = false;
+        });
+    };
     WorkersPage.prototype.setPage = function (page) {
         if (page < 1 || page > this.pager.totalPages) {
             return;
@@ -65,9 +78,6 @@ var WorkersPage = (function () {
         this.pager = this.pagerService.getPager(this.workers.length, page);
         // get current page of items
         this.pagedItems = this.workers.slice(this.pager.startIndex, this.pager.endIndex + 1);
-        console.log(this.pager);
-        console.log(this.pagedItems);
-        console.log(this.tippers);
     };
     WorkersPage.prototype.updateWorker = function (worker_Id, status) {
         var _this = this;
@@ -87,7 +97,6 @@ var WorkersPage = (function () {
         else {
             this.workerId.push(value);
         }
-        console.log('saalim', this.workerId);
     };
     WorkersPage.prototype.selectAllId = function () {
         console.log(this.isCheckedAll);
@@ -104,7 +113,6 @@ var WorkersPage = (function () {
             }
         }
         this.isCheckedAll = !this.isCheckedAll;
-        console.log('saalim1', this.workerId);
     };
     WorkersPage.prototype.isChecked = function (value) {
         return this.workerId.includes(value);
@@ -119,12 +127,10 @@ var WorkersPage = (function () {
             .then(function (data) {
             _this.workers = data;
             _this.loader = false;
-            console.log('data');
             _this.workerService.getWorkers(_this.user.hotel_id)
                 .then(function (data) {
                 _this.workers = data;
                 _this.setPage(1);
-                console.log(data);
                 _this.loader = false;
             }); // close refresh
         });
@@ -141,7 +147,6 @@ var WorkersPage = (function () {
         this.workerService.workerDetails(id)
             .then(function (data) {
             _this.worker = data[0];
-            console.log('Worker', _this.worker);
         })
             .catch(function (error) {
             console.log(error);
@@ -153,9 +158,8 @@ var WorkersPage = (function () {
     WorkersPage.prototype.updateWorkerInfo = function () {
         var _this = this;
         this.loader = true;
-        this.workerService.updateWorkerInfo(this.worker.name, this.worker.email, this.worker.id, this.worker.department, this.worker.status)
+        this.workerService.updateWorkerInfo(this.worker.name, this.worker.email, this.worker.id, this.worker.department, this.worker.status, this.worker.login_type)
             .then(function (result) {
-            console.log(result);
             _this.workerService.getWorkers(_this.user.hotel_id)
                 .then(function (data) {
                 _this.workers = data;
@@ -175,6 +179,9 @@ var WorkersPage = (function () {
             .then(function (data) {
             _this.send_success = 'Email has been sent successfully!';
             _this.loader = false;
+            setTimeout(function () {
+                document.getElementById("send_success").style.display = 'none';
+            }, 3000);
         })
             .catch(function (error) {
             console.log(error);
@@ -196,14 +203,12 @@ var WorkersPage = (function () {
         else {
             this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
                 .then(function (data2) {
-                console.log(data2);
                 // refresh pending worker list for display
                 _this.workerService.getWorkers(_this.user.hotel_id)
                     .then(function (data) {
                     _this.workers = data;
                     _this.setPage(1);
                     _this.loader = false;
-                    console.log(data);
                 });
                 $('#addEmpModal').modal('hide');
                 _this.f_name = '';
@@ -222,23 +227,17 @@ var WorkersPage = (function () {
         }
     };
     WorkersPage.prototype.downloadCSV = function () {
-        var options = {
-            showLabels: true
-        };
-        var emp = this.workers;
-        for (var i = 0; i < emp.length; i++) {
-            delete emp[i].account_balance;
-            delete emp[i].account_creation;
-            delete emp[i].age;
-            delete emp[i].auth_id;
-            delete emp[i].cust_id;
-            delete emp[i].hotel_id;
-            delete emp[i].id;
-            delete emp[i].password_reset_token;
-            delete emp[i].password_token_expires;
-            delete emp[i].social_id;
-            delete emp[i].social_type;
-            delete emp[i].password;
+        var emp = [];
+        for (var i = 0; i < this.workers.length; i++) {
+            emp.push({
+                name: this.workers[i].name,
+                login_type: this.workers[i].login_type == '0' ? 'Manager' : 'Employee',
+                email: this.workers[i].email,
+                department: this.workers[i].department,
+                status: this.workers[i].status == '0' ? 'Inactive' : 'Active',
+                activity: this.workers[i].activity,
+                hotel_name: this.workers[i].hotel_name
+            });
         }
         new angular2_csv_1.Angular2Csv(emp, 'Employees', { headers: Object.keys(emp[0]) });
     };

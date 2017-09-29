@@ -5,7 +5,8 @@ import { Http }      from '@angular/http';
 import 'rxjs/add/operator/map';
 import { WorkersService } from './providers/workers.service';
 import { HotelsService } from './providers/hotels.service';
-
+import { Router } from "@angular/router";
+declare var $: any;
 @Component({
   selector: 'settings',
   templateUrl: 'app/settings.component.html',
@@ -27,6 +28,7 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 	departments:any[]=[];
 	dept_name:any[]=[];
 	success:any;
+	dept_success:any;
 	user_type:any;
 	login_type:any;
 	newRole:any;
@@ -36,12 +38,27 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 	dept_loader:boolean = false;
 	role_loader:boolean = false;
 	bankInfo:any;
+	bank_success:boolean = false;
+	bank_remove_success:boolean = false;
 	errorMessage:any;
+	errorMessage2:any;
+	errors:any = [{
+		message:''
+	}];
+	show_bank_update:boolean = false;
+	show_set_default:boolean = false;
+	name:any;
+	routingNumber:any;
+	accountNumber:any;
+	bankAccountType:any;
+	bankDetails:any;
 	constructor(private auth: Auth, 
 	private http: Http,
 	private authHttp: AuthHttp,
 	private workersService: WorkersService,
-	private hotelsService: HotelsService){
+	private hotelsService: HotelsService,
+	private router:Router){
+		console.log(this.user);
 		this.loader = true;
 		this.id= this.user.id;
 		this.worker=[];
@@ -52,7 +69,6 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 				if(this.departments == null){
 					this.departments = [""];
 				}
-				console.log('Dept',this.departments);	
 				this.loader = false;			
 				})
 			.catch(error=>{
@@ -72,10 +88,13 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 		
 		this.workersService.getBankInfo(this.user.id)
 			.then(data =>{
-				if(data && data['funding-sources'][0].bankName){
-					this.bankInfo = data['funding-sources'][0].bankName;
+				console.log(data);
+				
+				if(data && data['funding-sources']){
+					this.bankInfo = data['funding-sources'];
+					/*this.bankInfo.bankAccountType = data['funding-sources'][0].bankAccountType;
+					this.bankInfo.bankName = data['funding-sources'][0].bankName;*/
 				}
-				console.log(this.bankInfo);
 				})
 			.catch(error=>{
 				console.log(error);
@@ -85,8 +104,8 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 	getBankInfo(){
 		this.workersService.getBankInfo(this.user.id)
 			.then(data =>{
-				if(data && data['funding-sources'][0].bankName){
-					this.bankInfo = data['funding-sources'][0].bankName;
+				if(data && data['funding-sources']){
+					this.bankInfo = data['funding-sources'];
 				}
 				console.log(this.bankInfo);
 				})
@@ -95,14 +114,139 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 				});	
 	}
 
+	submitBankInfo(){
+		this.loader = true;
+		if(!this.name || !this.routingNumber || !this.accountNumber || !this.bankAccountType){
+			this.errorMessage2 = 'Please fill all the fields!';
+			this.loader = false;
+		}else{
+			this.errorMessage = '';
+			this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.bankAccountType, this.name)
+				.then(data=>{
+					console.log(data);
+					this.getBankInfo();
+					$('#add_bank').modal('hide');
+					this.name = '';
+					this.routingNumber = '';
+					this.accountNumber = '';
+					this.bankAccountType = '';
+					this.loader = false;
+					})
+				.catch(error=>{
+					this.errorMessage = JSON.parse(error._body);
+					this.errorMessage = (JSON.parse(this.errorMessage.message));
+					console.log(this.errorMessage);
+					if(this.errorMessage && this.errorMessage.message && this.errorMessage._embedded && this.errorMessage._embedded.errors){
+						this.errors = this.errorMessage._embedded.errors;
+						this.loader = false;
+					}
+					this.loader = false;
+					});
+		}
+	}
+
+	showBankUpdate(bank:any){
+		console.log(bank);
+		this.bankDetails=bank;
+		this.show_bank_update= true;
+	}
+
+	showSetDefault(bank:any){
+		console.log(bank);
+		this.bankDetails=bank;
+		this.show_set_default= true;
+	}
+
+
+	updateBank(){
+
+		this.loader = true;
+		this.workersService.updateBankInfo(this.user.id, this.bankDetails.bankAccountType, this.bankDetails.name, this.bankDetails.id)
+			.then((data:any)=>{
+				console.log(data);
+				this.show_bank_update = false;
+				this.loader = false;
+				this.bank_success = true;
+				$('#update_bank').modal('hide');
+				setTimeout(function(){
+		            document.getElementById("bank_success").style.display = 'none';
+		          },3000);
+			})
+			.catch((error:any)=>{
+				console.log(error);
+			})
+	}
+
+	deleteBank(){
+		this.loader = true;
+		this.workersService.deleteBankInfo(this.user.id, this.bankDetails.id)
+			.then((data:any)=>{
+				console.log(data);
+				this.workersService.getBankInfo(this.user.id)
+				.then(data =>{
+					let bank_id = JSON.parse(localStorage.getItem('admin'));
+					if(this.bankDetails.id == bank_id.default_funding_source){
+						bank_id.default_funding_source = '';
+						this.user.default_funding_source = '';
+						bank_id = JSON.stringify(bank_id);
+						localStorage.setItem('admin', bank_id);
+					}
+					this.loader = false;
+					$('#update_bank').modal('hide');
+					if(data && data['funding-sources']){
+						this.bankInfo = data['funding-sources'];
+						this.bank_remove_success = true;
+						setTimeout(function(){
+				            document.getElementById("bank_remove_success").style.display = 'none';
+				          },3000);
+							if(!data['funding-sources'][0] && this.user.login_type=='1'){
+								//alert('You don\'t have a bank account linked with bTIPt. Please add bank to make transactions')
+								this.router.navigate(["/bank-info"]);
+								setTimeout(function(){
+									window.location.reload();
+								},100);
+							}
+					}
+					})
+				.catch(error=>{
+					console.log(error);
+					this.loader = false;
+					});
+			})
+			.catch((error:any)=>{
+				console.log(error);
+				this.loader = false;
+
+			})
+	}
+
+	setDefaultBank(){
+		this.loader = true;
+		this.workersService.setDefaultBank(this.user.id, this.bankDetails.id)
+			.then((data:any)=>{
+				console.log(data);
+				this.getBankInfo();
+				this.user.default_funding_source = this.bankDetails.id;
+				localStorage.setItem("admin", JSON.stringify(this.user));
+				this.show_set_default= false;
+				$('#set_default_bank').modal('hide');
+
+				this.loader = false;
+			})
+			.catch((error:any)=>{
+				console.log(error);
+			})
+	}
+
 	updateRoles(){
 		this.loader = true;
 		this.user_type = this.user.user_type;
+		console.log(this.user_type);
 		//this.login_type = this.user.login_type;
-		this.workersService.workerRoles(this.role.dashboard, this.role.worker_employees, this.role.tip_comparison, this.role.tip_employee, this.role.reviews, this.user_type, this.role.login_type)
+		this.workersService.workerRoles(this.role.dashboard, this.role.worker_employees, this.role.tip_comparison, this.role.tip_employee, this.role.reviews, this.user_type, '1', this.user.hotel_id)
 			.then(data=>{
+				console.log(this.role.login_type);
 					this.role_success = 'Roles updated successfully';
-					console.log(this.role_success);
 					this.loader = false;
 				})
 			.catch(error=>{
@@ -118,8 +262,6 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 		this.newRole.reviews = this.role.reviews;
 		this.newRole.user_type = this.user_type;
 		this.newRole.setting = true;
-		console.log('SASAS', this.newRole);
-		console.log('old', this.role);
 
 		localStorage.setItem("user_roles2",JSON.stringify(this.newRole));
 		this.role = JSON.parse(localStorage.getItem('user_roles2'));
@@ -175,9 +317,13 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 		this.dept_loader = true;
 		this.hotelsService.addDepartments(this.id, this.departments)
 			.then(data =>{
-				console.log('Department Added');
-				this.success= 'Departments Updated';
+				this.dept_success= 'Departments Updated';
+				document.getElementById("dept_success").style.display = '';
 				this.dept_loader = false;
+				setTimeout(function(){
+					this.dept_success= '';
+	           		document.getElementById("dept_success").style.display = 'none';
+          		},3000);
 			})
 			.catch(error=>{
 				this.errorMessage = JSON.parse(error._body);

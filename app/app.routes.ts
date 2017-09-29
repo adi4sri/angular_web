@@ -32,7 +32,7 @@ import { WorkerTipComparisonComponent }       from './worker.tip.comparison.comp
 import { BankInfo }    from './bank-info';
 var user = JSON.parse(localStorage.getItem('admin'));
 const appRoutes: Routes = [
-  { path: '', redirectTo: user?(user.user_type=='worker'?'/home':'/hotels'):'/default', pathMatch: 'full'},
+  { path: '', redirectTo: user?(user.user_type=='worker'?(user.login_type=='1'?'/settings':'/home'):'/hotels'):'/default', pathMatch: 'full'},
   { path: 'home', component: HomeComponent , canActivate:[AuthGuard]},
   { path: 'ping', component: PingComponent, canActivate:[AuthGuard]},
   { path: 'workers', component: WorkersPage, canActivate:[AuthGuard]},

@@ -32,7 +32,7 @@ var worker_tip_comparison_component_1 = require("./worker.tip.comparison.compone
 var bank_info_1 = require("./bank-info");
 var user = JSON.parse(localStorage.getItem('admin'));
 var appRoutes = [
-    { path: '', redirectTo: user ? (user.user_type == 'worker' ? '/home' : '/hotels') : '/default', pathMatch: 'full' },
+    { path: '', redirectTo: user ? (user.user_type == 'worker' ? (user.login_type == '1' ? '/settings' : '/home') : '/hotels') : '/default', pathMatch: 'full' },
     { path: 'home', component: home_component_1.HomeComponent, canActivate: [auth_guard_service_1.AuthGuard] },
     { path: 'ping', component: ping_component_1.PingComponent, canActivate: [auth_guard_service_1.AuthGuard] },
     { path: 'workers', component: workers_component_1.WorkersPage, canActivate: [auth_guard_service_1.AuthGuard] },

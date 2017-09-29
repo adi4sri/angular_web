@@ -65,6 +65,27 @@ var Auth = (function () {
         });
     };
     ;
+    Auth.prototype.workerShadowLogin = function (email, user_type) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var data = { email: email, user_type: user_type };
+            console.log(data);
+            var postUrl = _this.url + 'users/worker/shadow_login';
+            _this.http
+                .post(postUrl, data, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                _this.user = data;
+                localStorage.setItem('id_token', data.id);
+                localStorage.setItem('auth_id', data.id);
+                resolve(data);
+            }, function (error) {
+                reject(error);
+                console.log(error.json());
+            });
+        });
+    };
+    ;
     Auth.prototype.authenticated = function () {
         // Check if there's an unexpired JWT
         // It searches for an item in localStorage with key == 'id_token'

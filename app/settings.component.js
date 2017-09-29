@@ -16,14 +16,16 @@ var http_1 = require("@angular/http");
 require("rxjs/add/operator/map");
 var workers_service_1 = require("./providers/workers.service");
 var hotels_service_1 = require("./providers/hotels.service");
+var router_1 = require("@angular/router");
 var SettingsComponent = (function () {
-    function SettingsComponent(auth, http, authHttp, workersService, hotelsService) {
+    function SettingsComponent(auth, http, authHttp, workersService, hotelsService, router) {
         var _this = this;
         this.auth = auth;
         this.http = http;
         this.authHttp = authHttp;
         this.workersService = workersService;
         this.hotelsService = hotelsService;
+        this.router = router;
         this.user = JSON.parse(localStorage.getItem('admin'));
         this.role = JSON.parse(localStorage.getItem('user_roles2'));
         this.view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
@@ -33,6 +35,14 @@ var SettingsComponent = (function () {
         this.loader = false;
         this.dept_loader = false;
         this.role_loader = false;
+        this.bank_success = false;
+        this.bank_remove_success = false;
+        this.errors = [{
+                message: ''
+            }];
+        this.show_bank_update = false;
+        this.show_set_default = false;
+        console.log(this.user);
         this.loader = true;
         this.id = this.user.id;
         this.worker = [];
@@ -43,7 +53,6 @@ var SettingsComponent = (function () {
             if (_this.departments == null) {
                 _this.departments = [""];
             }
-            console.log('Dept', _this.departments);
             _this.loader = false;
         })
             .catch(function (error) {
@@ -61,10 +70,12 @@ var SettingsComponent = (function () {
                 });*/
         this.workersService.getBankInfo(this.user.id)
             .then(function (data) {
-            if (data && data['funding-sources'][0].bankName) {
-                _this.bankInfo = data['funding-sources'][0].bankName;
+            console.log(data);
+            if (data && data['funding-sources']) {
+                _this.bankInfo = data['funding-sources'];
+                /*this.bankInfo.bankAccountType = data['funding-sources'][0].bankAccountType;
+                this.bankInfo.bankName = data['funding-sources'][0].bankName;*/
             }
-            console.log(_this.bankInfo);
         })
             .catch(function (error) {
             console.log(error);
@@ -74,10 +85,129 @@ var SettingsComponent = (function () {
         var _this = this;
         this.workersService.getBankInfo(this.user.id)
             .then(function (data) {
-            if (data && data['funding-sources'][0].bankName) {
-                _this.bankInfo = data['funding-sources'][0].bankName;
+            if (data && data['funding-sources']) {
+                _this.bankInfo = data['funding-sources'];
             }
             console.log(_this.bankInfo);
+        })
+            .catch(function (error) {
+            console.log(error);
+        });
+    };
+    SettingsComponent.prototype.submitBankInfo = function () {
+        var _this = this;
+        this.loader = true;
+        if (!this.name || !this.routingNumber || !this.accountNumber || !this.bankAccountType) {
+            this.errorMessage2 = 'Please fill all the fields!';
+            this.loader = false;
+        }
+        else {
+            this.errorMessage = '';
+            this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.bankAccountType, this.name)
+                .then(function (data) {
+                console.log(data);
+                _this.getBankInfo();
+                $('#add_bank').modal('hide');
+                _this.name = '';
+                _this.routingNumber = '';
+                _this.accountNumber = '';
+                _this.bankAccountType = '';
+                _this.loader = false;
+            })
+                .catch(function (error) {
+                _this.errorMessage = JSON.parse(error._body);
+                _this.errorMessage = (JSON.parse(_this.errorMessage.message));
+                console.log(_this.errorMessage);
+                if (_this.errorMessage && _this.errorMessage.message && _this.errorMessage._embedded && _this.errorMessage._embedded.errors) {
+                    _this.errors = _this.errorMessage._embedded.errors;
+                    _this.loader = false;
+                }
+                _this.loader = false;
+            });
+        }
+    };
+    SettingsComponent.prototype.showBankUpdate = function (bank) {
+        console.log(bank);
+        this.bankDetails = bank;
+        this.show_bank_update = true;
+    };
+    SettingsComponent.prototype.showSetDefault = function (bank) {
+        console.log(bank);
+        this.bankDetails = bank;
+        this.show_set_default = true;
+    };
+    SettingsComponent.prototype.updateBank = function () {
+        var _this = this;
+        this.loader = true;
+        this.workersService.updateBankInfo(this.user.id, this.bankDetails.bankAccountType, this.bankDetails.name, this.bankDetails.id)
+            .then(function (data) {
+            console.log(data);
+            _this.show_bank_update = false;
+            _this.loader = false;
+            _this.bank_success = true;
+            $('#update_bank').modal('hide');
+            setTimeout(function () {
+                document.getElementById("bank_success").style.display = 'none';
+            }, 3000);
+        })
+            .catch(function (error) {
+            console.log(error);
+        });
+    };
+    SettingsComponent.prototype.deleteBank = function () {
+        var _this = this;
+        this.loader = true;
+        this.workersService.deleteBankInfo(this.user.id, this.bankDetails.id)
+            .then(function (data) {
+            console.log(data);
+            _this.workersService.getBankInfo(_this.user.id)
+                .then(function (data) {
+                var bank_id = JSON.parse(localStorage.getItem('admin'));
+                if (_this.bankDetails.id == bank_id.default_funding_source) {
+                    bank_id.default_funding_source = '';
+                    _this.user.default_funding_source = '';
+                    bank_id = JSON.stringify(bank_id);
+                    localStorage.setItem('admin', bank_id);
+                }
+                _this.loader = false;
+                $('#update_bank').modal('hide');
+                if (data && data['funding-sources']) {
+                    _this.bankInfo = data['funding-sources'];
+                    _this.bank_remove_success = true;
+                    setTimeout(function () {
+                        document.getElementById("bank_remove_success").style.display = 'none';
+                    }, 3000);
+                    if (!data['funding-sources'][0] && _this.user.login_type == '1') {
+                        //alert('You don\'t have a bank account linked with bTIPt. Please add bank to make transactions')
+                        _this.router.navigate(["/bank-info"]);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 100);
+                    }
+                }
+            })
+                .catch(function (error) {
+                console.log(error);
+                _this.loader = false;
+            });
+        })
+            .catch(function (error) {
+            console.log(error);
+            _this.loader = false;
+        });
+    };
+    SettingsComponent.prototype.setDefaultBank = function () {
+        var _this = this;
+        this.loader = true;
+        this.workersService.setDefaultBank(this.user.id, this.bankDetails.id)
+            .then(function (data) {
+            console.log(data);
+            _this.getBankInfo();
+            _this.user.default_funding_source = _this.bankDetails.id;
+            localStorage.setItem("admin", JSON.stringify(_this.user));
+            _this.show_set_default = false;
+            $('#set_default_bank').modal('hide');
+            _this.loader = false;
         })
             .catch(function (error) {
             console.log(error);
@@ -87,11 +217,12 @@ var SettingsComponent = (function () {
         var _this = this;
         this.loader = true;
         this.user_type = this.user.user_type;
+        console.log(this.user_type);
         //this.login_type = this.user.login_type;
-        this.workersService.workerRoles(this.role.dashboard, this.role.worker_employees, this.role.tip_comparison, this.role.tip_employee, this.role.reviews, this.user_type, this.role.login_type)
+        this.workersService.workerRoles(this.role.dashboard, this.role.worker_employees, this.role.tip_comparison, this.role.tip_employee, this.role.reviews, this.user_type, '1', this.user.hotel_id)
             .then(function (data) {
+            console.log(_this.role.login_type);
             _this.role_success = 'Roles updated successfully';
-            console.log(_this.role_success);
             _this.loader = false;
         })
             .catch(function (error) {
@@ -106,8 +237,6 @@ var SettingsComponent = (function () {
         this.newRole.reviews = this.role.reviews;
         this.newRole.user_type = this.user_type;
         this.newRole.setting = true;
-        console.log('SASAS', this.newRole);
-        console.log('old', this.role);
         localStorage.setItem("user_roles2", JSON.stringify(this.newRole));
         this.role = JSON.parse(localStorage.getItem('user_roles2'));
     };
@@ -155,9 +284,13 @@ var SettingsComponent = (function () {
         this.dept_loader = true;
         this.hotelsService.addDepartments(this.id, this.departments)
             .then(function (data) {
-            console.log('Department Added');
-            _this.success = 'Departments Updated';
+            _this.dept_success = 'Departments Updated';
+            document.getElementById("dept_success").style.display = '';
             _this.dept_loader = false;
+            setTimeout(function () {
+                this.dept_success = '';
+                document.getElementById("dept_success").style.display = 'none';
+            }, 3000);
         })
             .catch(function (error) {
             _this.errorMessage = JSON.parse(error._body);
@@ -175,7 +308,8 @@ var SettingsComponent = (function () {
             http_1.Http,
             angular2_jwt_1.AuthHttp,
             workers_service_1.WorkersService,
-            hotels_service_1.HotelsService])
+            hotels_service_1.HotelsService,
+            router_1.Router])
     ], SettingsComponent);
     return SettingsComponent;
 }());

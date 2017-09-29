@@ -56,6 +56,27 @@ export class Auth {
     });
   };
 
+  workerShadowLogin(email, user_type) {
+    return new Promise((resolve,reject) => { 
+    var data = {email: email, user_type: user_type};
+    console.log(data);
+    let postUrl = this.url + 'users/worker/shadow_login';
+    
+    this.http
+    .post(postUrl, data, this.options)
+      .map(res => res.json())
+      .subscribe(data => {
+            this.user=data;
+            localStorage.setItem('id_token',data.id);
+            localStorage.setItem('auth_id',data.id);
+            resolve(data);
+      }, error => {
+          reject(error);
+          console.log(error.json());
+      });
+    });
+  };
+
   public authenticated() {
     // Check if there's an unexpired JWT
     // It searches for an item in localStorage with key == 'id_token'

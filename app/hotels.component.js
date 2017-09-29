@@ -40,26 +40,24 @@ var HotelsPage = (function () {
         this.worker_count = [];
         this.loader = false;
         this.pager = {};
-        console.log(this.user);
+        this.hideLoc = false;
         this.loader = true;
         this.hotelForm = false;
         this.hotelService.getHotels()
             .then(function (data2) {
             _this.hotels = data2;
-            console.log('hotelData', _this.hotels);
             _this.setPage(1);
             _this.loader = false;
         });
-        this.tipsService.dashboard(this.user.hotel_id)
-            .then(function (data2) {
-            _this.tips = data2;
-            _this.loader = false;
-        });
+        /*this.tipsService.dashboard(this.user.hotel_id)
+        .then((data2:any) => {
+          this.tips = data2;
+          this.loader = false;
+        });*/
         this.tipsService.getAllTips()
             .then(function (data2) {
             _this.tippers = data2;
             _this.loader = false;
-            console.log('Tippers', _this.tippers);
             var total = 0;
             for (var i = 0; i < _this.tippers.length; i++) {
                 if (_this.tippers[i].amount) {
@@ -67,17 +65,14 @@ var HotelsPage = (function () {
                     _this.totalamount = total;
                 }
             }
-            console.log('TOTAL', _this.totalamount);
         });
         this.workersService.getAllWorkers()
             .then(function (data2) {
             _this.workers = data2;
             _this.loader = false;
-            console.log('workerdata', _this.workers);
             for (var i = 0; i < _this.workers.length; i++) {
                 _this.worker_count.push(_this.workers[i].hotel_id);
             }
-            console.log('workerdata', _this.worker_count.sort());
             _this.worker_count.sort();
         });
     }
@@ -89,9 +84,14 @@ var HotelsPage = (function () {
         this.pager = this.pagerService.getPager(this.hotels.length, page);
         // get current page of items
         this.pagedItems = this.hotels.slice(this.pager.startIndex, this.pager.endIndex + 1);
-        console.log(this.pager);
-        console.log(this.pagedItems);
-        console.log(this.tippers);
+    };
+    HotelsPage.prototype.next = function () {
+        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail) {
+            this.errorMessage = 'Please fill all the fields correctly';
+        }
+        else {
+            this.hideLoc = true;
+        }
     };
     HotelsPage.prototype.updateHotelStatus = function (hotelId, status) {
         var _this = this;
@@ -101,17 +101,41 @@ var HotelsPage = (function () {
             _this.loader = false;
         });
     };
-    HotelsPage.prototype.view_hotel = function (hotel_id) {
-        if (hotel_id) {
-            this.v_data = this.user;
-            this.v_data.user_type = "worker";
-            this.v_data.hotel_id = hotel_id;
-            localStorage.setItem("admin", JSON.stringify(this.v_data));
-            this.view_mode = true;
-            localStorage.setItem("view_hotel", JSON.stringify(this.view_mode));
-            this.router.navigate(['/home']);
-            setTimeout(function () { window.location.reload(); }, 100);
+    HotelsPage.prototype.view_hotel = function (hotel_id, hotel_email) {
+        var _this = this;
+        if (hotel_id && hotel_email) {
+            this.loader = true;
+            this.shadow = this.user;
+            localStorage.setItem("shadow", JSON.stringify(this.shadow));
+            localStorage.setItem("shadow_roles1", JSON.stringify(this.shadow.user_roles_super));
+            localStorage.setItem("shadow_roles2", JSON.stringify(this.shadow.user_roles_admin));
+            this.auth.workerShadowLogin(hotel_email, "worker")
+                .then(function (data) {
+                _this.v_data = data;
+                _this.v_data.hotel_id = hotel_id;
+                _this.v_data.user_type = "worker";
+                localStorage.setItem("admin", JSON.stringify(_this.v_data));
+                localStorage.setItem("user_roles1", JSON.stringify(_this.v_data.user_roles_manager));
+                localStorage.setItem("user_roles2", JSON.stringify(_this.v_data.user_roles_worker));
+                _this.view_mode = true;
+                localStorage.setItem("view_hotel", JSON.stringify(_this.view_mode));
+                _this.router.navigate(['/home']);
+                setTimeout(function () { window.location.reload(); }, 100);
+                _this.loader = false;
+            })
+                .catch(function (error) {
+                console.log(error);
+                if (error && error._body) {
+                    var err = JSON.parse(error._body);
+                    alert(err.message);
+                    _this.loader = false;
+                }
+            });
             //window.location.reload();
+        }
+        else {
+            console.log(hotel_email, hotel_id);
+            this.loader = false;
         }
     };
     HotelsPage.prototype.selectId = function (value) {
@@ -121,10 +145,8 @@ var HotelsPage = (function () {
         else {
             this.hotelId.push(value);
         }
-        console.log('saalim', this.hotelId);
     };
     HotelsPage.prototype.selectAllId = function () {
-        console.log(this.isCheckedAll);
         this.hotelId = [];
         if (this.isCheckedAll) {
             this.hotelId = [];
@@ -136,7 +158,6 @@ var HotelsPage = (function () {
             }
         }
         this.isCheckedAll = !this.isCheckedAll;
-        console.log('saalim1', this.hotelId);
     };
     HotelsPage.prototype.isChecked = function (value) {
         return this.hotelId.includes(value);
@@ -155,7 +176,6 @@ var HotelsPage = (function () {
             }); // close refresh
         })
             .catch(function (error) {
-            console.log(error);
             _this.loader = false;
         });
     };
@@ -166,7 +186,6 @@ var HotelsPage = (function () {
         this.hotelForm = false;
     };
     HotelsPage.prototype.displayHotel = function (hotel) {
-        console.log('hotel', hotel);
         // this.hotelForm = false;
     };
     //add worker to allowed workers list for signup - need to put in real hotel_id here
@@ -180,13 +199,11 @@ var HotelsPage = (function () {
         else {
             this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee)
                 .then(function (data) {
-                console.log("data", data);
                 // refresh hotel list  
                 _this.hotelService.getHotels()
                     .then(function (data2) {
                     _this.hotels = data2;
                     _this.setPage(1);
-                    console.log(data2);
                     _this.loader = false;
                 }); // close refresh
                 _this.hotelForm = false;
@@ -196,9 +213,10 @@ var HotelsPage = (function () {
                 _this.hotelAddress = '';
                 _this.hotelZip = '';
                 _this.hotelEmail = '';
+                _this.hotelEmployee = '';
+                _this.hideLoc = false;
             })
                 .catch(function (error) {
-                console.log(error);
                 _this.errorMessage = 'Account with this email already exist';
                 _this.loader = false;
             });
@@ -208,13 +226,18 @@ var HotelsPage = (function () {
         var options = {
             showLabels: true
         };
-        var hotels = this.hotels;
-        for (var i = 0; i < hotels.length; i++) {
-            hotels[i].number_of_employees = hotels[i].count;
-            hotels[i].roles = hotels[i].departments;
-            delete hotels[i].count;
-            delete hotels[i].id;
-            delete hotels[i].departments;
+        var hotels = [];
+        for (var i = 0; i < this.hotels.length; i++) {
+            hotels.push({
+                name: this.hotels[i].name,
+                city: this.hotels[i].city,
+                account_creation: this.hotels[i].account_creation,
+                address: this.hotels[i].address,
+                zip_code: this.hotels[i].zip_code,
+                status: this.hotels[i].status == '0' ? 'Inactive' : 'Active',
+                email: this.hotels[i].email,
+                number_of_employees: this.hotels[i].count,
+            });
         }
         new angular2_csv_1.Angular2Csv(hotels, 'Hotels', { headers: Object.keys(hotels[0]) });
     };

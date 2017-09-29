@@ -53,9 +53,6 @@ export class TippersComponent {
  
         // get current page of items
         this.pagedItems = this.tippers.slice(this.pager.startIndex, this.pager.endIndex + 1);
-        console.log(this.pager);
-        console.log(this.pagedItems);
-        console.log(this.tippers);
 
     }
 
@@ -69,11 +66,9 @@ export class TippersComponent {
     	}else{
      		this.tipperId.push(value); 
     	}
-     	console.log('saalim',this.tipperId)
   	}
 
 	selectAllId(){
-    	console.log(this.isCheckedAll);
     	this.tipperId=[];
     	if(this.isCheckedAll){
       	this.tipperId=[];
@@ -85,22 +80,18 @@ export class TippersComponent {
         	}
       	}
     	this.isCheckedAll = !this.isCheckedAll;
-    	console.log('saalim1',this.tipperId);
   	}
 
   	deleteTipper(){
-	  	console.log('tipperID',this.tipperId);
       this.loader = true;
 	    this.tipsService.deleteTip(this.tipperId)
 	    .then(data =>{
 	      this.tippers = data;
-	      console.log(data);
 
 	      this.tipsService.getAllTips()
 	        .then(data => {
 	        this.tippers= data;
           this.setPage(1);
-	          console.log(data);  
             this.loader = false;      
 	        });// close refresh
 	      });

@@ -57,45 +57,83 @@ var FeedbackComponent = (function () {
         ];
         this.barChartLegend = false;
         this.barChartType = 'horizontalBar';
-        this.workersService.getReviewsGraph(this.user.hotel_id)
-            .then(function (data) {
-            _this.barChartData = [
-                { data: data }
-            ];
-            console.log(_this.barChartData);
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
-        this.workersService.getReviews(this.user.hotel_id)
-            .then(function (data) {
-            _this.reviews = data;
-            if (_this.reviews && _this.reviews[0]) {
-                _this.is_review = false;
-            }
-            else if (_this.reviews.message) {
-                _this.is_review = true;
-            }
-            console.log('REVIEWS', _this.reviews);
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
-        this.workersService.getCountReviews(this.user.hotel_id)
-            .then(function (data) {
-            _this.count = parseInt(data[0].count);
-            _this.average = parseInt(data[0].avg);
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
+        if (this.user.login_type == '0') {
+            this.workersService.getReviewsGraph(this.user.hotel_id)
+                .then(function (data) {
+                _this.barChartData = [
+                    { data: data }
+                ];
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.workersService.getReviews(this.user.hotel_id)
+                .then(function (data) {
+                _this.reviews = data;
+                if (_this.reviews && _this.reviews[0]) {
+                    _this.is_review = false;
+                }
+                else if (_this.reviews.message) {
+                    _this.is_review = true;
+                }
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.workersService.getAllReviews(this.user.hotel_id)
+                .then(function (data) {
+                _this.all_reviews = data;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.workersService.getCountReviews(this.user.hotel_id)
+                .then(function (data) {
+                _this.count = parseInt(data[0].count);
+                _this.average = parseInt(data[0].avg);
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+        }
+        if (this.user.login_type == '1') {
+            this.workersService.getReviewsEmpGraph(this.user.id)
+                .then(function (data) {
+                _this.barChartDataEmp = [
+                    { data: data }
+                ];
+                console.log('e', data);
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.workersService.getAllEmpReviews(this.user.id)
+                .then(function (data) {
+                _this.all_reviews = data;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.workersService.getCountEmpReviews(this.user.id)
+                .then(function (data) {
+                _this.count = parseInt(data[0].count);
+                _this.average = parseInt(data[0].avg);
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+        }
     }
     FeedbackComponent.prototype.downloadCSV = function () {
-        var options = {
-            showLabels: true
-        };
-        this.csv = this.reviews;
-        new angular2_csv_1.Angular2Csv(this.csv, 'Reviews', options);
+        var csv = this.all_reviews;
+        for (var i = 0; i < csv.length; i++) {
+            delete csv[i].guest_id;
+            delete csv[i].hotel_id;
+            delete csv[i].tip_id;
+            delete csv[i].worker_id;
+            delete csv[i].id;
+        }
+        new angular2_csv_1.Angular2Csv(csv, 'Reviews', { headers: Object.keys(csv[0]) });
     };
     // events
     FeedbackComponent.prototype.chartClicked = function (e) {

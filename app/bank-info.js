@@ -25,15 +25,59 @@ var BankInfo = (function () {
         this.route = route;
         this.router = router;
         this.user = JSON.parse(localStorage.getItem('admin'));
+        this.loader = false;
     }
     BankInfo.prototype.submitBankInfo = function () {
         var _this = this;
+        this.loader = true;
         var name = this.f_name + ' ' + this.l_name;
         this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.type, name)
             .then(function (data) {
             console.log(data);
-            _this.router.navigate(['/home']);
-            setTimeout(function () { window.location.reload(); }, 100);
+            if (_this.auth.authenticated()) {
+                _this.workersService.getBankInfo(_this.user.id)
+                    .then(function (data1) {
+                    console.log(data1);
+                    if ((data1['funding-sources'][0] && _this.user.login_type == '1' && _this.user.user_roles_worker.dashboard == true) || _this.user.login_type == '0') {
+                        _this.router.navigate(["/home"]);
+                        console.log('Login', JSON.parse(localStorage.getItem("admin")));
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 100);
+                    }
+                    else if (_this.user.user_roles_worker.tip_employee == true && _this.user.login_type == '1' && data1['funding-sources'][0]) {
+                        _this.router.navigate(["/employee_tips"]);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 100);
+                    }
+                    else if (_this.user.user_roles_worker.tip_comparison == true && _this.user.login_type == '1' && data1['funding-sources'][0]) {
+                        _this.router.navigate(["/tip_comparison"]);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 100);
+                    }
+                    else if (!data1['funding-sources'][0]) {
+                        _this.router.navigate(["/bank-info"]);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 100);
+                    }
+                    else {
+                        _this.router.navigate(["/settings"]);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 100);
+                    }
+                    //setTimeout(function(){ window.location.reload(); }, 100);
+                    _this.loader = false;
+                })
+                    .catch(function (error) {
+                    console.log(error);
+                    //  window.location.reload();    
+                    _this.loader = false;
+                });
+            }
         })
             .catch(function (error) {
             _this.errorMessage = JSON.parse(error._body);

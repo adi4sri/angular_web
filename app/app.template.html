@@ -109,7 +109,7 @@
       </li> -->
 
       <li [routerLinkActive]="['active']">
-        <a href="#" [routerLink]="['/settings']"  *ngIf="(auth.authenticated() && user.user_type=='worker') && !view_hotel_mode">
+        <a href="#" [routerLink]="['/settings']"  *ngIf="(auth.authenticated() && user.user_type=='worker') ">
           <i class="fa fa-cog"></i> Settings
         </a>
       </li>

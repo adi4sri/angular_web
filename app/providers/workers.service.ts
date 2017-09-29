@@ -19,8 +19,6 @@ export class WorkersService {
   options: RequestOptions = new RequestOptions({ headers: this.headers });
   constructor(public http: Http, private authHttp: AuthHttp, public auth: Auth) {    
     //var toke = localStorage.getItem('id_token');
-    console.log(localStorage.getItem('auth_id'));
-    console.log(auth);
 
     //this.userAuthObj = auth.user;
     //this.authId = this.userAuthObj.user_id.substring(6); //remove auth0 header
@@ -30,12 +28,15 @@ export class WorkersService {
   checkEmp(emails){
     var json = { emails: emails};
     var params = json;
-    return new Promise(resolve=>{
+    return new Promise((resolve, reject)=>{
       this.http.post(this.url + 'users/check_workers',json, this.options)
       .map((res:any) => res.json())
       .subscribe((data:any)=>{
         resolve(data)
-      });
+      },
+        (error:any)=>{
+          reject(error);
+        });
     });
   }
 
@@ -67,12 +68,51 @@ export class WorkersService {
       });
   }
 
+  getAllReviews(id){
+    return new Promise((resolve, reject) => {
+      this.http.get(this.url + 'reviews/all_review/' + id)
+      .map(res => res.json())
+      .subscribe(data =>{
+        resolve(data);
+        },
+        error =>{
+          reject(error);
+        });
+      });
+  }
+
+  getAllEmpReviews(id){
+    return new Promise((resolve, reject) => {
+      this.http.get(this.url + 'reviews/all_emp_review/' + id)
+      .map(res => res.json())
+      .subscribe(data =>{
+        resolve(data);
+        },
+        error =>{
+          reject(error);
+        });
+      });
+  }
+
   getReviewsGraph(id){
     return new Promise(resolve => {
       this.http.post(this.url + 'reviews/graph/' + id, {})
       .map(res => res.json())
       .subscribe(data =>{
         resolve(data);
+        });
+      });
+  }
+
+  getReviewsEmpGraph(id){
+    return new Promise((resolve,reject) => {
+      this.http.post(this.url + 'reviews/emp_graph/' + id, {})
+      .map(res => res.json())
+      .subscribe(data =>{
+        resolve(data);
+        },
+        error=>{
+          reject(error);
         });
       });
   }
@@ -120,6 +160,16 @@ export class WorkersService {
   getCountReviews(id){
     return new Promise(resolve => {
       this.http.get(this.url + 'reviews/review_count/' + id)
+      .map(res => res.json())
+      .subscribe(data =>{
+        resolve(data);
+        });
+      }); 
+  }
+
+  getCountEmpReviews(id){
+    return new Promise(resolve => {
+      this.http.get(this.url + 'reviews/review_count_emp/' + id)
       .map(res => res.json())
       .subscribe(data =>{
         resolve(data);
@@ -194,6 +244,20 @@ export class WorkersService {
     });
   }
 
+  searchWorker(string){
+    return new Promise((resolve, reject)=>{
+      var params = {string : string};
+      this.http.post(this.url + 'users/search_worker', params, this.options)
+      .map(res=>res.json())
+      .subscribe(data =>{
+        resolve(data);
+      },
+      error =>{
+        reject(error);
+      });
+    })
+  }
+
     //get pending worker data by hotel
   getAllowedWorkers(hotelId) {
     // Dont have the data yet
@@ -263,7 +327,6 @@ export class WorkersService {
   bankInfo(userId, routingNumber, accountNumber, type, name){
    return new Promise((resolve, reject)=>{
       var json = {routingNumber: routingNumber, accountNumber: accountNumber,type:type, name:name};
-      console.log(json);
       var param = json;
       let postUrl = this.url + 'users/worker/'+ userId + '/funding-sources';
 
@@ -288,16 +351,59 @@ export class WorkersService {
       }); 
   }
 
-  updateWorkerInfo(name, email, worker_id, department, status){
+  updateBankInfo(userId, type, name,fundingId){
+    return new Promise((resolve, reject)=>{
+      var json = {type:type, name:name};
+      var param = json;
+      let postUrl = this.url + 'users/worker/' + userId + '/funding-sources/update/'+fundingId;
+      this.http.post(postUrl, param, this.options)
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data);
+          },
+          error => {
+            reject(error)
+          });
+    });
+  }
+
+  deleteBankInfo(userId, fundingId){
+    return new Promise((resolve, reject)=>{
+      let postUrl = this.url + 'users/worker/' + userId + '/funding-sources/delete/'+fundingId;
+      this.http.post(postUrl, this.options)
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data);
+          },
+          error => {
+            reject(error)
+          });
+    });
+  }
+
+  setDefaultBank(userId, fundingId){
+    return new Promise((resolve, reject)=>{
+      let postUrl = this.url + 'users/worker/' + userId + '/funding-sources/default/'+fundingId;
+      this.http.post(postUrl, this.options)
+        .map(res => res.json())
+        .subscribe(data => {
+          resolve(data);
+          },
+          error => {
+            reject(error)
+          });
+    });
+  }
+
+  updateWorkerInfo(name, email, worker_id, department, status, login_type){
     return new Promise((resolve, reject) =>{
-      var json = {name: name, email: email, id: worker_id, department:department, status:status};
+      var json = {name: name, email: email, id: worker_id, department:department, status:status, login_type:login_type};
       var params = json;
       let postUrl = this.url + 'users/worker/update_info';
       this.http.post(postUrl, params, this.options)
         .map(res => res.json())
         .subscribe(data => {
           resolve(data);
-          console.log('UPDATEDATA',data);
           },
           error => reject(error),
           () => console.log("Finished")
@@ -386,7 +492,7 @@ export class WorkersService {
       });
   }
 
-  workerRoles(dashboard, employees, tip_comparison, tip_employee, reviews, user_type, login_type){
+  workerRoles(dashboard, employees, tip_comparison, tip_employee, reviews, user_type, login_type, hotel_id){
     return new Promise((resolve, reject) =>{
       var data = {
         dashboard: dashboard,
@@ -395,7 +501,8 @@ export class WorkersService {
         tip_employee: tip_employee,
         reviews:reviews,
         user_type: user_type,
-        login_type: login_type
+        login_type: login_type,
+        hotel_id: hotel_id
       };
       var body = data;
       var headers = new Headers();

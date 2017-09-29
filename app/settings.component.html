@@ -1,10 +1,14 @@
-
+<style>
+  .set-bank:hover,.set-bank:focus{
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+  }
+</style>
 <div class="setting">
 	
   
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#profile">Profile</a></li>
-    <li *ngIf="user.login_type=='1'"><a data-toggle="tab" href="#bank" (click)="getBankInfo()">Bank Info</a></li>
+    <li><a data-toggle="tab" href="#bank" *ngIf="!view_hotel_mode">Bank Info</a></li>
     <li *ngIf="user.login_type=='0'"><a data-toggle="tab" href="#dept">Departments</a></li>
     <li *ngIf="user.login_type=='0'"><a data-toggle="tab" href="#user">User Roles</a></li>
   </ul>
@@ -68,24 +72,182 @@
     <div id="bank" class="tab-pane fade">
       
       <h2 class="text-center">Bank Info</h2>
-      <div class="alert alert-success" *ngIf="success">
-        {{success}}
-      </div>
-      <form  *ngIf="!dept_loader" class="container-fluid">
-       <div class="group" *ngIf="bankInfo">
-            <label>Bank Info</label> &nbsp;
-            <input type="text" class="mtl-input" required value="{{bankInfo}}" disabled>
-            <span class="bar"></span>
+
+      <form  *ngIf="!dept_loader && bankInfo" class="container-fluid">
+      <div id="bank_success" class="alert alert-success" *ngIf="bank_success">
+          Bank Details updated successfully!
+        </div>
+        <div id="bank_remove_success" class="alert alert-success" *ngIf="bank_remove_success">
+          Bank removed successfully!
+        </div>
+       <div class="group" *ngFor="let bank of bankInfo">
+        <div>
+            <!-- <input type="text" class="mtl-input" required value="{{bank.bankName}} ****" disabled>
+            <span class="bar"></span> -->
+            <div class="mtl-input set-bank" (click)="showSetDefault(bank)" data-toggle="modal" 
+          data-target="#set_default_bank" style="cursor: pointer;">
+            {{bank.bankName}} **** 
+            <i *ngIf="user && user.default_funding_source == bank.id" class="material-icons text-primary">&#xE876;</i>
+            </div>
+           <!--  <p >
+                Default Bank
+            </p> -->
+
+            <!-- <p  *ngIf="user && user.default_funding_source != bank.id"  data-toggle="modal" 
+          data-target="#set_default_bank" style="font-size:16px;cursor: pointer;">
+              Set as default bank
+            </p> -->
           </div> 
+         
+          
+         
+
+          <p style="font-size:16px;cursor: pointer;" 
+          (click)="showBankUpdate(bank)" data-toggle="modal" 
+          data-target="#update_bank">
+          <i class="fa fa-pencil"></i> Update Bank Account
+          </p>
+        </div>
+      <div *ngIf="bankInfo">
+        <p style="font-size:16px;cursor: pointer;" 
+          data-toggle="modal" data-target="#add_bank">
+          <i class="fa fa-plus"></i> Add Bank Account
+        </p>
+      </div>
+      <div *ngIf="!bankInfo">
+        <p style="font-size:16px;cursor: pointer;" 
+          data-toggle="modal" data-target="#add_bank">
+          <i class="fa fa-plus"></i> Add Bank Account
+        </p>
+      </div>
+      </form>
+
+      <div class="modal fade" id="add_bank" role="dialog">
+        <div class="modal-dialog small-modal">
+        <div class="modal-content">
+        <div class="modal-header">
+          Add Bank Info
+        </div>
+        <div class="padding">
+        <form>
+        <div class="text-danger" *ngIf="errorMessage">{{errorMessage.message}}</div>
+        <div class="text-danger" *ngIf="errorMessage2">{{errorMessage}}</div>
+
+        <div class="text-danger" *ngFor="let error of errors ">{{error.message}}</div>
+          <div class="control-group">
+            <label class="">Name</label>
+            <input type="text" class="form-control" [(ngModel)]="name" name="name" />
+          </div>
+          <div class="control-group">
+            <label class="">Routing Number</label>
+            <input type="text" class="form-control" [(ngModel)]="routingNumber" name="routingNumber" />
+          </div>
+          <div class="control-group">
+            <label class="">Account Number</label>
+            <input type="text" class="form-control" [(ngModel)]="accountNumber" name="accountNumber" />
+          </div>
+          <div class="control-group">
+            <label class="">Account Type</label>
+            <select class="form-control" [(ngModel)]="bankAccountType" name="bankAccountType">
+              <option value="savings">Savings</option>
+              <option value="checking">Checking</option>
+            </select>
+          </div>
+
+        </form>   
+        </div>
+          <div class="modal-footer">
+            <button class="btn btn-default form-control" [disabled]="loader" (click)="submitBankInfo()">Add Bank Info</button>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="update_bank" role="dialog" *ngIf="bankDetails">
+        <div class="modal-dialog small-modal">
+        <div class="modal-content">
+        <div class="modal-header">
+          Update Bank Info
+        </div>
+        <div class="padding">
         
-        </form>
-      
+        <form>
+          <div class="control-group">
+            <label class="">Name</label>
+            <input type="text" class="form-control" [(ngModel)]="bankDetails.name" name="name" />
+          </div>
+          <!-- <div class="control-group">
+            <label class="">Routing Number</label>
+            <input type="text" class="form-control" [(ngModel)]="routingNumber" name="routingNumber" />
+          </div>
+          <div class="control-group">
+            <label class="">Account Number</label>
+            <input type="text" class="form-control" [(ngModel)]="accountNumber" name="accountNumber" />
+          </div> -->
+          <div class="control-group">
+            <label class="">Account Type</label>
+            <select class="form-control" [(ngModel)]="bankDetails.bankAccountType" name="bankAccountType" disabled>
+              <option value="savings">Savings</option>
+              <option value="checking">Checking</option>
+            </select>
+          </div>
+
+        </form>   
+        </div>
+          <div class="modal-footer">
+            <div>
+              <button class="btn btn-default form-control" *ngIf="!loader" (click)="updateBank()">Save Changes</button>
+            </div>
+            <br/>
+            <div>
+              <button class="btn btn-danger form-control" *ngIf="!loader" (click)="deleteBank()"> Remove Bank </button>
+            </div>
+            <div *ngIf="loader" class="loader"></div>
+
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="set_default_bank" role="dialog" *ngIf="bankDetails">
+        <div class="modal-dialog small-modal">
+        <div class="modal-content" *ngIf="user.default_funding_source == bankDetails.id">
+        <div class="modal-header">
+          Set Default Bank
+        </div>
+        <div class="padding">
+          This is a default bank account!
+        </div>
+        </div>
+        <div class="modal-content" *ngIf="!user.default_funding_source || user.default_funding_source != bankDetails.id">
+        <div class="modal-header">
+          Set Default Bank
+        </div>
+        <div class="padding">
+          <p>
+            Do you want to set this bank as default for transactions?
+          </p>
+           
+        </div>
+          <div class="modal-footer">
+            <div class="col-xs-6">
+              <button class="btn btn-danger form-control" data-dismiss="modal">No</button>
+            </div>
+
+            <div class="col-xs-6">
+             <button class="btn btn-default form-control"  (click)="setDefaultBank()">
+             Set as default bank</button>
+             </div>
+          </div>
+        </div>
+        </div>
+      </div>
     </div>
     <div id="dept" class="tab-pane fade">
       <div class="loader" *ngIf="dept_loader"></div>
       <h2 class="text-center">Departments</h2>
-      <div class="alert alert-success" *ngIf="success">
-        {{success}}
+      <div class="alert alert-success" [hidden]="!dept_success" id="dept_success">
+        {{dept_success}}
       </div>
       <form  *ngIf="!dept_loader" class="container-fluid">
       	<div  *ngFor="let dept of departments; let i = index;   trackBy:trackByFn" class="form-group"> 

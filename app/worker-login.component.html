@@ -14,8 +14,9 @@
 			<input type="password" placeholder="Password" [(ngModel)]="password" class="form-control" name="password"/>
 		</div>
 		<div class="form-group">
-			<input type="submit" name="submit" value="Login" 
-			(click)="loginUser()" class="form-control btn-default"/>
+			<button (click)="loginUser()" class="form-control btn-default">
+				Login
+			</button>
 		</div>
 	</form>
 	<p *ngIf="!loader" class="text-center forgot-password" (click)="forgotPassword()">Forgot Username or Password?</p>

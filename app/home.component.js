@@ -69,28 +69,31 @@ var HomeComponent = (function () {
         };
         this.barChartDailyColors = [
             {
-                backgroundColor: '#65b4ff',
+                backgroundColor: 'transparent',
                 borderColor: '#65b4ff',
                 pointBackgroundColor: 'transparent',
-                pointBorderColor: 'transparent',
+                pointBorderColor: '#65b4ff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+                pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+                borderWidth: 3
             },
             {
-                backgroundColor: '#ac00ff',
+                backgroundColor: 'transparent',
                 borderColor: '#ac00ff',
                 pointBackgroundColor: 'transparent',
                 pointBorderColor: 'transparent',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(77,83,96,1)'
+                pointHoverBorderColor: 'rgba(77,83,96,1)',
+                borderWidth: 3
             },
             {
-                backgroundColor: '#a4a2a0',
+                backgroundColor: 'transparent',
                 borderColor: '#a4a2a0',
                 pointBackgroundColor: 'transparent',
                 pointBorderColor: 'transparent',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+                pointHoverBorderColor: 'rgba(148,159,177,0.8)',
+                borderWidth: 3
             }
         ];
         this.lineChartMonthlyColors = [
@@ -121,10 +124,10 @@ var HomeComponent = (function () {
         ];
         this.lineChartMonthlyLegend = true;
         this.lineChartMonthlyType = 'line';
-        console.log(this.user.login_type);
         if (this.user && this.user.user_type == 'admin') {
             this.router.navigate(['/hotels']);
         }
+        console.log(this.user);
         this.loader = true;
         this.tipsService.top_tipped_emp(this.user.hotel_id)
             .then(function (data) {
@@ -176,14 +179,12 @@ var HomeComponent = (function () {
                 _this.period = 'this month';
             }
             _this.loader = false;
-            console.log('toppedEmp', _this.topped_emp);
         })
             .catch(function (error) {
             console.log(error);
         });
         this.workersService.getMonthlyReviews(this.user.hotel_id)
             .then(function (data) {
-            console.log('Month', data);
             _this.reviews = data;
             if (_this.reviews && _this.reviews.message) {
                 _this.review_period = 'this month';
@@ -243,90 +244,219 @@ var HomeComponent = (function () {
             console.log(error);
         });
         //houseData=[];
-        this.tipsService.dashboard(this.user.hotel_id)
-            .then(function (data2) {
-            _this.tips = data2;
-            _this.show = true;
-        });
         this.tipsService.chart()
             .then(function (data) {
             _this.tipData = data;
         });
-        this.tipsService.monthly_chart_data(this.user.hotel_id)
-            .then(function (data1) {
-            _this.chart_data = data1;
-            for (var key in _this.chart_data) {
-                var data2 = {
-                    data: _this.chart_data[key],
-                    label: key,
-                    tension: 0
-                };
-                _this.lineChartMonthlyData.push(data2);
-            }
-            console.log(_this.lineChartMonthlyData);
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
-        this.tipsService.weekly_chart_data(this.user.hotel_id)
-            .then(function (data1) {
-            _this.weeks = [];
-            _this.week_data = data1;
-            for (var key in _this.week_data) {
-                var data2 = {
-                    data: _this.week_data[key],
-                    label: key,
-                    tension: 0
-                };
-                _this.lineChartWeeklyData.push(data2);
-            }
-            for (var j = 1; j <= 52; j++) {
-                _this.weeks.push('Week ' + j);
-            }
-            _this.lineChartWeeklyLabels = _this.weeks;
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
-        this.tipsService.yearly_chart_data(this.user.hotel_id)
-            .then(function (data1) {
-            _this.years = [];
-            _this.year_data = data1;
-            for (var key in _this.year_data) {
-                var data2 = {
-                    data: _this.year_data[key],
-                    label: key,
-                    tension: 0
-                };
-                _this.lineChartYearlyData.push(data2);
-            }
-            var d = new Date();
-            var n = d.getFullYear();
-            for (var j = 2012; j <= n; j++) {
-                _this.years.push(j);
-            }
-            _this.lineChartYearlyLabels = _this.years;
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
-        this.tipsService.daily_chart_data(this.user.hotel_id)
-            .then(function (data1) {
-            _this.days = [];
-            _this.day_data = data1;
-            for (var key in _this.day_data) {
-                var data2 = {
-                    data: _this.day_data[key],
-                    label: key,
-                    tension: 0
-                };
-                _this.lineChartDailyData.push(data2);
-            }
-            _this.lineChartDailyLabels = ['Today'];
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
+        if (this.user.login_type == '0') {
+            this.tipsService.dashboard(this.user.hotel_id)
+                .then(function (data2) {
+                _this.tips = data2;
+                _this.show = true;
+            });
+            this.tipsService.monthly_chart_data(this.user.hotel_id)
+                .then(function (data1) {
+                _this.chart_data = data1;
+                for (var key in _this.chart_data) {
+                    var data2 = {
+                        data: _this.chart_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartMonthlyData.push(data2);
+                }
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.weekly_chart_data(this.user.hotel_id)
+                .then(function (data1) {
+                _this.weeks = [];
+                _this.week_data = data1;
+                for (var key in _this.week_data) {
+                    var data2 = {
+                        data: _this.week_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartWeeklyData.push(data2);
+                }
+                for (var j = 0; j <= 6; j++) {
+                    switch (j) {
+                        case 0:
+                            _this.weeks.push('Sunday');
+                            break;
+                        case 1:
+                            _this.weeks.push('Monday');
+                            break;
+                        case 2:
+                            _this.weeks.push('Tuesday');
+                            break;
+                        case 3:
+                            _this.weeks.push('Wednesday');
+                            break;
+                        case 4:
+                            _this.weeks.push('Thurday');
+                            break;
+                        case 5:
+                            _this.weeks.push('Friday');
+                            break;
+                        case 6:
+                            _this.weeks.push('Saturday');
+                            break;
+                    }
+                }
+                _this.lineChartWeeklyLabels = _this.weeks;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.yearly_chart_data(this.user.hotel_id)
+                .then(function (data1) {
+                _this.years = [];
+                _this.year_data = data1;
+                for (var key in _this.year_data) {
+                    var data2 = {
+                        data: _this.year_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartYearlyData.push(data2);
+                }
+                var d = new Date();
+                var n = d.getFullYear();
+                for (var j = 2012; j <= n; j++) {
+                    _this.years.push(j);
+                }
+                _this.lineChartYearlyLabels = _this.years;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.daily_chart_data(this.user.hotel_id)
+                .then(function (data1) {
+                _this.days = [];
+                _this.day_data = data1;
+                for (var key in _this.day_data) {
+                    var data2 = {
+                        data: _this.day_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartDailyData.push(data2);
+                }
+                _this.lineChartDailyLabels = ['Today'];
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+        }
+        if (this.user.login_type == '1') {
+            this.tipsService.workerTipsComparison(this.user.id)
+                .then(function (data) {
+                _this.show = true;
+                _this.tips = data;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.emp_monthly_chart(this.user.id)
+                .then(function (data) {
+                _this.chart_data = data;
+                for (var key in _this.chart_data) {
+                    var data2 = {
+                        data: _this.chart_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartMonthlyData.push(data2);
+                }
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.emp_weekly_chart(this.user.id)
+                .then(function (data1) {
+                _this.weeks = [];
+                _this.week_data = data1;
+                for (var key in _this.week_data) {
+                    var data2 = {
+                        data: _this.week_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartWeeklyData.push(data2);
+                }
+                for (var j = 0; j <= 6; j++) {
+                    switch (j) {
+                        case 0:
+                            _this.weeks.push('Sunday');
+                            break;
+                        case 1:
+                            _this.weeks.push('Monday');
+                            break;
+                        case 2:
+                            _this.weeks.push('Tuesday');
+                            break;
+                        case 3:
+                            _this.weeks.push('Wednesday');
+                            break;
+                        case 4:
+                            _this.weeks.push('Thurday');
+                            break;
+                        case 5:
+                            _this.weeks.push('Friday');
+                            break;
+                        case 6:
+                            _this.weeks.push('Saturday');
+                            break;
+                    }
+                }
+                _this.lineChartWeeklyLabels = _this.weeks;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.emp_yearly_chart(this.user.id)
+                .then(function (data1) {
+                _this.years = [];
+                _this.year_data = data1;
+                for (var key in _this.year_data) {
+                    var data2 = {
+                        data: _this.year_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartYearlyData.push(data2);
+                }
+                var d = new Date();
+                var n = d.getFullYear();
+                for (var j = 2012; j <= n; j++) {
+                    _this.years.push(j);
+                }
+                _this.lineChartYearlyLabels = _this.years;
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+            this.tipsService.emp_daily_chart(this.user.id)
+                .then(function (data1) {
+                _this.days = [];
+                _this.day_data = data1;
+                for (var key in _this.day_data) {
+                    var data2 = {
+                        data: _this.day_data[key],
+                        label: key,
+                        tension: 0
+                    };
+                    _this.lineChartDailyData.push(data2);
+                }
+                _this.lineChartDailyLabels = ['Today'];
+            })
+                .catch(function (error) {
+                console.log(error);
+            });
+        }
     }
     HomeComponent.prototype.top_review_daily = function () {
         var _this = this;
@@ -373,7 +503,6 @@ var HomeComponent = (function () {
         this.loader = true;
         this.workersService.getMonthlyReviews(this.user.hotel_id)
             .then(function (data) {
-            console.log('Month', data);
             _this.reviews = data;
             if (_this.reviews && _this.reviews.message) {
                 _this.review_period = 'this month';
@@ -383,7 +512,6 @@ var HomeComponent = (function () {
                 _this.is_review = false;
             }
             if (_this.reviews && _this.reviews[0]) {
-                _this.is_review = true;
                 switch (_this.reviews[0].month) {
                     case 1:
                         _this.review_period = 'Jan';
@@ -433,6 +561,7 @@ var HomeComponent = (function () {
         })
             .catch(function (error) {
             console.log(error);
+            _this.loader = false;
         });
     };
     HomeComponent.prototype.top_review_yearly = function () {
@@ -473,7 +602,6 @@ var HomeComponent = (function () {
                 _this.period = 'this year';
             }
             _this.loader = false;
-            console.log('toppedEmp', _this.topped_emp);
         })
             .catch(function (error) {
             console.log(error);
@@ -532,7 +660,6 @@ var HomeComponent = (function () {
                 _this.period = 'this month';
             }
             _this.loader = false;
-            console.log('toppedEmp', _this.topped_emp);
         })
             .catch(function (error) {
             console.log(error);
@@ -546,7 +673,6 @@ var HomeComponent = (function () {
             _this.topped_emp = data;
             _this.period = 'this week';
             _this.loader = false;
-            console.log('toppedEmp', _this.topped_emp);
         })
             .catch(function (error) {
             console.log(error);
@@ -560,22 +686,11 @@ var HomeComponent = (function () {
             _this.topped_emp = data;
             _this.period = 'this day';
             _this.loader = false;
-            console.log('toppedEmp', _this.topped_emp);
         })
             .catch(function (error) {
             console.log(error);
         });
     };
-    /*  public randomize():void {
-        let _lineChartData:Array<any> = new Array(this.lineChartData.length);
-        for (let i = 0; i < this.lineChartData.length; i++) {
-          _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
-          for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-            _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
-          }
-        }
-        this.lineChartData = _lineChartData;
-      }*/
     // events
     HomeComponent.prototype.chartClicked = function (e) {
         console.log(e);

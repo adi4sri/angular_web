@@ -46,11 +46,29 @@ var TipsService = (function () {
             id: id
         };
         var params = json;
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             _this.http.post(_this.url + '/chart_data', params, _this.options)
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
+    TipsService.prototype.emp_monthly_chart = function (id) {
+        var _this = this;
+        var json = {
+            id: id
+        };
+        var params = json;
+        return new Promise(function (resolve, reject) {
+            _this.http.post(_this.url + '/emp_chart_month', params, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
             });
         });
     };
@@ -68,6 +86,22 @@ var TipsService = (function () {
             });
         });
     };
+    TipsService.prototype.emp_weekly_chart = function (id) {
+        var _this = this;
+        var json = {
+            id: id
+        };
+        var params = json;
+        return new Promise(function (resolve, reject) {
+            _this.http.post(_this.url + '/emp_chart_week', params, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
     TipsService.prototype.yearly_chart_data = function (id) {
         var _this = this;
         var json = {
@@ -82,6 +116,22 @@ var TipsService = (function () {
             });
         });
     };
+    TipsService.prototype.emp_yearly_chart = function (id) {
+        var _this = this;
+        var json = {
+            id: id
+        };
+        var params = json;
+        return new Promise(function (resolve, reject) {
+            _this.http.post(_this.url + '/emp_chart_year', params, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
     TipsService.prototype.daily_chart_data = function (id) {
         var _this = this;
         var json = {
@@ -93,6 +143,22 @@ var TipsService = (function () {
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
+            });
+        });
+    };
+    TipsService.prototype.emp_daily_chart = function (id) {
+        var _this = this;
+        var json = {
+            id: id
+        };
+        var params = json;
+        return new Promise(function (resolve, reject) {
+            _this.http.post(_this.url + '/emp_chart_daily', params, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
             });
         });
     };

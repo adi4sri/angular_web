@@ -16,7 +16,9 @@ var MyFilterPipe = (function () {
         }
         // filter items array, items which match and return true will be kept, false will be filtered out
         return items.filter(function (item) {
-            return item.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1;
+            return item.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1
+                ||
+                    item.email.toLowerCase().indexOf(filter.toLowerCase()) !== -1;
         });
     };
     MyFilterPipe = __decorate([

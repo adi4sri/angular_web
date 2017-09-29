@@ -16,15 +16,13 @@ var angular2_jwt_1 = require("angular2-jwt");
 var auth_service_1 = require("../auth.service");
 var WorkersService = (function () {
     function WorkersService(http, authHttp, auth) {
+        //var toke = localStorage.getItem('id_token');
         this.http = http;
         this.authHttp = authHttp;
         this.auth = auth;
         this.url = 'http://13.59.184.105:9000/';
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.options = new http_1.RequestOptions({ headers: this.headers });
-        //var toke = localStorage.getItem('id_token');
-        console.log(localStorage.getItem('auth_id'));
-        console.log(auth);
         //this.userAuthObj = auth.user;
         //this.authId = this.userAuthObj.user_id.substring(6); //remove auth0 header
     }
@@ -32,11 +30,13 @@ var WorkersService = (function () {
         var _this = this;
         var json = { emails: emails };
         var params = json;
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             _this.http.post(_this.url + 'users/check_workers', json, _this.options)
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
+            }, function (error) {
+                reject(error);
             });
         });
     };
@@ -66,6 +66,30 @@ var WorkersService = (function () {
             });
         });
     };
+    WorkersService.prototype.getAllReviews = function (id) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.http.get(_this.url + 'reviews/all_review/' + id)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
+    WorkersService.prototype.getAllEmpReviews = function (id) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.http.get(_this.url + 'reviews/all_emp_review/' + id)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
     WorkersService.prototype.getReviewsGraph = function (id) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -73,6 +97,18 @@ var WorkersService = (function () {
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
+            });
+        });
+    };
+    WorkersService.prototype.getReviewsEmpGraph = function (id) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.http.post(_this.url + 'reviews/emp_graph/' + id, {})
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
             });
         });
     };
@@ -120,6 +156,16 @@ var WorkersService = (function () {
         var _this = this;
         return new Promise(function (resolve) {
             _this.http.get(_this.url + 'reviews/review_count/' + id)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            });
+        });
+    };
+    WorkersService.prototype.getCountEmpReviews = function (id) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            _this.http.get(_this.url + 'reviews/review_count_emp/' + id)
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
@@ -193,6 +239,19 @@ var WorkersService = (function () {
             });
         });
     };
+    WorkersService.prototype.searchWorker = function (string) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var params = { string: string };
+            _this.http.post(_this.url + 'users/search_worker', params, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
     //get pending worker data by hotel
     WorkersService.prototype.getAllowedWorkers = function (hotelId) {
         var _this = this;
@@ -250,7 +309,6 @@ var WorkersService = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var json = { routingNumber: routingNumber, accountNumber: accountNumber, type: type, name: name };
-            console.log(json);
             var param = json;
             var postUrl = _this.url + 'users/worker/' + userId + '/funding-sources';
             _this.http.post(postUrl, param, _this.options)
@@ -271,17 +329,57 @@ var WorkersService = (function () {
             }, function (error) { return reject(error); });
         });
     };
-    WorkersService.prototype.updateWorkerInfo = function (name, email, worker_id, department, status) {
+    WorkersService.prototype.updateBankInfo = function (userId, type, name, fundingId) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var json = { name: name, email: email, id: worker_id, department: department, status: status };
+            var json = { type: type, name: name };
+            var param = json;
+            var postUrl = _this.url + 'users/worker/' + userId + '/funding-sources/update/' + fundingId;
+            _this.http.post(postUrl, param, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
+    WorkersService.prototype.deleteBankInfo = function (userId, fundingId) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var postUrl = _this.url + 'users/worker/' + userId + '/funding-sources/delete/' + fundingId;
+            _this.http.post(postUrl, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
+    WorkersService.prototype.setDefaultBank = function (userId, fundingId) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var postUrl = _this.url + 'users/worker/' + userId + '/funding-sources/default/' + fundingId;
+            _this.http.post(postUrl, _this.options)
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                resolve(data);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    };
+    WorkersService.prototype.updateWorkerInfo = function (name, email, worker_id, department, status, login_type) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var json = { name: name, email: email, id: worker_id, department: department, status: status, login_type: login_type };
             var params = json;
             var postUrl = _this.url + 'users/worker/update_info';
             _this.http.post(postUrl, params, _this.options)
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
-                console.log('UPDATEDATA', data);
             }, function (error) { return reject(error); }, function () { return console.log("Finished"); });
         });
     };
@@ -348,7 +446,7 @@ var WorkersService = (function () {
             }, function (error) { return reject(error); }, function () { return console.log('User Roles Updated'); });
         });
     };
-    WorkersService.prototype.workerRoles = function (dashboard, employees, tip_comparison, tip_employee, reviews, user_type, login_type) {
+    WorkersService.prototype.workerRoles = function (dashboard, employees, tip_comparison, tip_employee, reviews, user_type, login_type, hotel_id) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var data = {
@@ -358,7 +456,8 @@ var WorkersService = (function () {
                 tip_employee: tip_employee,
                 reviews: reviews,
                 user_type: user_type,
-                login_type: login_type
+                login_type: login_type,
+                hotel_id: hotel_id
             };
             var body = data;
             var headers = new http_1.Headers();

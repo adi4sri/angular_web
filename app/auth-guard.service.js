@@ -23,7 +23,6 @@ var AuthGuard = (function () {
         this.user = JSON.parse(localStorage.getItem('admin'));
     }
     AuthGuard.prototype.canActivate = function () {
-        console.log('i am checking to see if you are logged in');
         if (!this.auth.authenticated()) {
             this.router.navigate(['/default']);
             //document.write('Please Login to continue');
@@ -44,11 +43,9 @@ var AuthGuard = (function () {
         }
     };
     AuthGuard.prototype.canActivateChild = function () {
-        console.log('checking child route access');
         return true;
     };
     AuthGuard.prototype.canLoad = function () {
-        console.log('check load');
         if (this.auth.authenticated() && this.user.user_type == 'worker') {
             this.router.navigate(['/home']);
             return false;

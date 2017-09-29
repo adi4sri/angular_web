@@ -34,8 +34,36 @@ var LoginComponent = (function () {
             localStorage.setItem("admin", JSON.stringify(data));
             localStorage.setItem("user_roles1", JSON.stringify(data.user_roles_super));
             localStorage.setItem("user_roles2", JSON.stringify(data.user_roles_admin));
-            _this.router.navigate(["/hotels"]);
-            window.location.reload();
+            if (data.login_type == '1' && data.user_roles_admin.location == true) {
+                _this.router.navigate(["/hotels"]);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 100);
+            }
+            else if (data.login_type == '1' && data.user_roles_admin.admin_employees == true) {
+                _this.router.navigate(["/admin-workers"]);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 100);
+            }
+            else if (data.login_type == '1' && data.user_roles_admin.tip_center == true) {
+                _this.router.navigate(["/tippers"]);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 100);
+            }
+            else if (data.login_type == '1' && data.user_roles_admin.setting == true) {
+                _this.router.navigate(["/admin_settings"]);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 100);
+            }
+            else {
+                _this.router.navigate(["/hotels"]);
+                setTimeout(function () {
+                    window.location.reload();
+                }, 100);
+            }
         })
             .catch(function (error) {
             _this.errorMessage = JSON.parse(error._body);

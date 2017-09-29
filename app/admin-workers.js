@@ -37,12 +37,12 @@ var AdminWorkers = (function () {
         this.emails = [];
         this.checked_emails = [];
         this.empty_file = "Please select a CSV file to upload employees";
-        console.log('user', this.user);
         this.id = this.user.id;
         this.worker = [];
         this.workerService.workerDetails(this.id)
             .then(function (data) {
             _this.worker = data[0];
+            console.log(_this.worker);
         })
             .catch(function (error) {
         });
@@ -52,37 +52,70 @@ var AdminWorkers = (function () {
             _this.workers = data;
             _this.setPage(1);
             _this.loader = false;
-            console.log(data);
         });
         this.hotelService.getHotels()
             .then(function (data2) {
             _this.hotels = data2;
             _this.dropdown_hotels = data2;
-            console.log(data2);
             _this.dropdown_hotels.unshift({ id: 'none', name: 'Please Select Hotel' });
             _this.workers_hotel = _this.dropdown_hotels[0].id;
             _this.loader = false;
         });
     }
+    AdminWorkers.prototype.search_worker = function () {
+        var _this = this;
+        this.loader = true;
+        this.workerService.searchWorker(this.searchWorker)
+            .then(function (data) {
+            _this.workers = data;
+            _this.loader = false;
+            if (data.length > 0) {
+                _this.setPage(1);
+            }
+        })
+            .catch(function (error) {
+            _this.loader = false;
+        });
+    };
     AdminWorkers.prototype.extractData = function (res) {
+        this.empty_file = '';
+        console.log(res);
         var lines = res.split("\n");
         var result = [];
-        var headers = lines[0].split(",");
+        var headers = ["name", "email", "department", "status"];
         this.emails = [];
-        for (var i = 1; i < lines.length - 1; i++) {
+        for (var i = 0; i < lines.length; i++) {
             var obj = {};
             var currentline = lines[i].split(",");
             for (var j = 0; j < headers.length; j++) {
                 obj[headers[j]] = currentline[j];
             }
-            result.push(obj);
+            if (obj['name'] && obj['email'] && obj['department'] && obj['status']) {
+                result.push(obj);
+            }
         }
         this.csvData = result; //JavaScript object
+        console.log(this.csvData);
+        /*if(headers){
+          if(headers[0]!='name' || headers[1]!='email' || headers[2]!='department' || headers[3]!='status'){
+            this.empty_file = "CSV must include headers i.e., name, email, department and status";
+          }
+          else{
+            this.empty_file ='';
+          }
+        }*/
         for (var i = 0; i < this.csvData.length; i++) {
-            if (!this.csvData[i].email) {
+            if ((!this.csvData[i].email) || (this.csvData[i].email == "")) {
                 this.empty_file = "Email is required in CSV.";
             }
             this.emails.push(this.csvData[i].email);
+            console.log(this.csvData[i].email);
+        }
+        for (var i = 0; i < this.csvData.length; i++) {
+            if (!this.csvData[i].status) {
+                this.empty_file = "Status is required and can be 0 or 1 (inactive or active).";
+            }
+            //this.emails.push(this.csvData[i].email);
         }
         for (var i = 0; i <= this.emails.length; i++) {
             for (var j = i; j <= this.emails.length; j++) {
@@ -91,14 +124,16 @@ var AdminWorkers = (function () {
                 }
             }
         }
-        console.log(this.emails);
     };
     AdminWorkers.prototype.handleHotelSelect = function () {
-        if (this.workers_hotel == 'none') {
-            this.empty_file = "Please select hotel";
+        if (this.empty_file) {
+            this.empty_file = this.empty_file;
+        }
+        else if (this.workers_hotel == 'none') {
+            this.hotel_error = "Please select hotel";
         }
         else {
-            this.empty_file = "";
+            this.hotel_error = "";
         }
     };
     AdminWorkers.prototype.handleFileSelect = function (evt) {
@@ -122,7 +157,6 @@ var AdminWorkers = (function () {
     };
     AdminWorkers.prototype.checkEmp = function () {
         var _this = this;
-        console.log(this.csvData);
         var emails = this.emails.join();
         this.loader = true;
         this.errorMessage = '';
@@ -136,13 +170,11 @@ var AdminWorkers = (function () {
                 }
                 _this.loader = false;
             }
-            else {
+            else if (_this.csvData) {
                 _this.workerService.bulkEmp(_this.csvData, _this.workers_hotel)
                     .then(function (data1) {
-                    console.log(data1);
                     _this.workerService.getAllWorkers()
                         .then(function (data2) {
-                        console.log(data2);
                         _this.workers = data2;
                         _this.successMessage = 'Employees added successfully';
                         _this.loader = false;
@@ -154,6 +186,10 @@ var AdminWorkers = (function () {
                     _this.loader = false;
                 });
             }
+            else {
+                _this.errorMessage = 'Please add employees data to upload!';
+                _this.loader = false;
+            }
         })
             .catch(function (error) {
             console.log(error);
@@ -164,8 +200,13 @@ var AdminWorkers = (function () {
         var _this = this;
         this.loader = true;
         this.workerService.updateWorkers(worker_Id, status)
-            .then(function (data) {
-            _this.loader = false;
+            .then(function (data1) {
+            _this.workerService.getAllWorkers()
+                .then(function (data) {
+                _this.workers = data;
+                _this.setPage(1);
+                _this.loader = false;
+            });
         });
     };
     AdminWorkers.prototype.select_hotel = function (hotel) {
@@ -178,7 +219,6 @@ var AdminWorkers = (function () {
         else {
             this.workerId.push(value);
         }
-        console.log('saalim', this.workerId);
     };
     AdminWorkers.prototype.selectAllId = function () {
         console.log(this.isCheckedAll);
@@ -193,7 +233,6 @@ var AdminWorkers = (function () {
             }
         }
         this.isCheckedAll = !this.isCheckedAll;
-        console.log('saalim1', this.workerId);
     };
     AdminWorkers.prototype.isChecked = function (value) {
         return this.workerId.includes(value);
@@ -208,12 +247,10 @@ var AdminWorkers = (function () {
             .then(function (data) {
             _this.loader = false;
             _this.workers = data;
-            console.log('data');
             _this.workerService.getAllWorkers()
                 .then(function (data) {
                 _this.workers = data;
                 _this.setPage(1);
-                console.log(data);
                 _this.loader = false;
             }); // close refresh
         });
@@ -230,7 +267,6 @@ var AdminWorkers = (function () {
         this.workerService.workerDetails(id)
             .then(function (data) {
             _this.worker = data[0];
-            console.log('Worker', _this.worker);
         })
             .catch(function (error) {
             console.log(error);
@@ -242,15 +278,15 @@ var AdminWorkers = (function () {
     AdminWorkers.prototype.updateWorkerInfo = function () {
         var _this = this;
         this.loader = true;
-        this.workerService.updateWorkerInfo(this.worker.name, this.worker.email, this.worker.id, this.worker.department, this.worker.status)
+        this.workerService.updateWorkerInfo(this.worker.name, this.worker.email, this.worker.id, this.worker.department, this.worker.status, this.worker.login_type)
             .then(function (result) {
-            console.log(result);
             _this.workerService.getAllWorkers()
                 .then(function (data) {
                 _this.workers = data;
+                _this.setPage(1);
+                $('#updateEmpModal').modal('hide');
                 _this.loader = false;
             });
-            $('#updateEmpModal').modal('hide');
         })
             .catch(function (error) {
             console.log(error);
@@ -263,6 +299,9 @@ var AdminWorkers = (function () {
             .then(function (data) {
             _this.send_success = 'Email has been sent successfully!';
             _this.loader = false;
+            setTimeout(function () {
+                document.getElementById("send_success").style.display = 'none';
+            }, 3000);
         })
             .catch(function (error) {
             console.log(error);
@@ -284,13 +323,11 @@ var AdminWorkers = (function () {
             this.loader = true;
             this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.dept_selected)
                 .then(function (data2) {
-                console.log(data2);
                 // refresh pending worker list for display
                 _this.workerService.getAllWorkers()
                     .then(function (data) {
                     _this.workers = data;
                     _this.setPage(1);
-                    console.log(data);
                     _this.loader = false;
                 });
                 $('#addEmpModal').modal('hide');
@@ -302,27 +339,22 @@ var AdminWorkers = (function () {
             })
                 .catch(function (error) {
                 _this.validEmail = 'Sorry! User already exist with this email.';
+                _this.loader = false;
             }); // end post
         }
     };
     AdminWorkers.prototype.downloadCSV = function () {
-        var options = {
-            showLabels: true
-        };
-        var emp = this.workers;
-        for (var i = 0; i < emp.length; i++) {
-            delete emp[i].account_balance;
-            delete emp[i].account_creation;
-            delete emp[i].age;
-            delete emp[i].auth_id;
-            delete emp[i].cust_id;
-            delete emp[i].hotel_id;
-            delete emp[i].id;
-            delete emp[i].password_reset_token;
-            delete emp[i].password_token_expires;
-            delete emp[i].social_id;
-            delete emp[i].social_type;
-            delete emp[i].password;
+        var emp = [];
+        for (var i = 0; i < this.workers.length; i++) {
+            emp.push({
+                name: this.workers[i].name,
+                login_type: this.workers[i].login_type == '0' ? 'Manager' : 'Employee',
+                email: this.workers[i].email,
+                department: this.workers[i].department,
+                status: this.workers[i].status == '0' ? 'Inactive' : 'Active',
+                activity: this.workers[i].activity,
+                hotel_name: this.workers[i].hotel_name
+            });
         }
         new angular2_csv_1.Angular2Csv(emp, 'Employees', { headers: Object.keys(emp[0]) });
     };
@@ -334,9 +366,6 @@ var AdminWorkers = (function () {
         this.pager = this.pagerService.getPager(this.workers.length, page);
         // get current page of items
         this.pagedItems = this.workers.slice(this.pager.startIndex, this.pager.endIndex + 1);
-        console.log(this.pager);
-        console.log(this.pagedItems);
-        console.log(this.tippers);
     };
     AdminWorkers = __decorate([
         core_1.Component({

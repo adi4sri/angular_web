@@ -9,24 +9,26 @@ import { Angular2Csv }  from 'angular2-csv';
 export class FeedbackComponent {
   user = JSON.parse(localStorage.getItem('admin'));
   reviews:any;
+  all_reviews:any;
   count:any;
   average:any;
   csv:any;
   is_review:boolean = false;
   barChartData:any;
+  barChartDataEmp:any;
   constructor(private auth: Auth, private workersService:WorkersService) {
+    if(this.user.login_type == '0'){
     this.workersService.getReviewsGraph(this.user.hotel_id)
       .then(data =>{
         this.barChartData= [
           {data: data}
         ];
-        console.log(this.barChartData);
         
         })
       .catch(error =>{
           console.log(error);
         });
-
+      
     this.workersService.getReviews(this.user.hotel_id)
       .then(data=>{
         this.reviews = data;
@@ -35,13 +37,20 @@ export class FeedbackComponent {
         }else if(this.reviews.message){
           this.is_review = true;
         }
-        console.log('REVIEWS',this.reviews);
         })
       .catch(error=>{
         console.log(error);
         });
 
-    this.workersService.getCountReviews(this.user.hotel_id)
+    this.workersService.getAllReviews(this.user.hotel_id)
+      .then(data=>{
+        this.all_reviews = data;
+        })
+      .catch(error=>{
+        console.log(error);
+        });
+
+      this.workersService.getCountReviews(this.user.hotel_id)
       .then(data=>{
         this.count = parseInt(data[0].count);
         this.average = parseInt(data[0].avg);
@@ -49,13 +58,51 @@ export class FeedbackComponent {
       .catch(error=>{
         console.log(error);
         });
+
+    }
+
+    if(this.user.login_type == '1'){
+      this.workersService.getReviewsEmpGraph(this.user.id)
+          .then(data =>{
+            this.barChartDataEmp= [
+              {data: data}
+            ];
+            console.log('e',data);
+            })
+          .catch(error =>{
+              console.log(error);
+            });
+    
+      this.workersService.getAllEmpReviews(this.user.id)
+          .then(data=>{
+            this.all_reviews = data;
+            })
+          .catch(error=>{
+            console.log(error);
+            });
+
+      this.workersService.getCountEmpReviews(this.user.id)
+      .then(data=>{
+        this.count = parseInt(data[0].count);
+        this.average = parseInt(data[0].avg);
+        })
+      .catch(error=>{
+        console.log(error);
+        });
+    
+    }    
   }
+
 downloadCSV(){
-    var options = {
-      showLabels: true
-    };
-    this.csv = this.reviews;
-    new Angular2Csv(this.csv, 'Reviews',options);
+    var csv = this.all_reviews;
+    for(var i=0; i < csv.length; i++){
+      delete csv[i].guest_id;
+      delete csv[i].hotel_id;
+      delete csv[i].tip_id;
+      delete csv[i].worker_id;
+      delete csv[i].id;
+    }
+    new Angular2Csv(csv, 'Reviews',{ headers: Object.keys(csv[0]) });
   }
     // barChart
   /*public barChartDataTable:Array<any> = [

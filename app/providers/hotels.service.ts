@@ -19,8 +19,6 @@ export class HotelsService {
 
   constructor(public http: Http, private authHttp: AuthHttp, public auth: Auth) {    
     //var toke = localStorage.getItem('id_token');
-    console.log(localStorage.getItem('auth_id'));
-    console.log(auth);
 
     //this.userAuthObj = auth.user;
     //this.authId = this.userAuthObj.user_id.substring(6); //remove auth0 header

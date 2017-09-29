@@ -39,15 +39,32 @@ export class TipsService {
       id: id
       };
       var params = json;
-    return new Promise(resolve =>{
+    return new Promise((resolve,reject) =>{
       this.http.post(this.url + '/chart_data', params,this.options)
         .map(res => res.json())
         .subscribe(data =>{
           resolve(data);
+        },(error)=>{
+          reject(error);
         });
       });
   }
 
+  emp_monthly_chart(id){
+    var json = { 
+      id: id
+      };
+      var params = json;
+    return new Promise((resolve,reject) =>{
+      this.http.post(this.url + '/emp_chart_month', params,this.options)
+        .map(res => res.json())
+        .subscribe(data =>{
+          resolve(data);
+        },(error)=>{
+          reject(error);
+        });
+      });
+  }
   weekly_chart_data(id){
     var json = { 
       id: id
@@ -58,6 +75,22 @@ export class TipsService {
         .map(res => res.json())
         .subscribe(data =>{
           resolve(data);
+        });
+      });
+  }
+
+  emp_weekly_chart(id){
+    var json = { 
+      id: id
+      };
+      var params = json;
+    return new Promise((resolve,reject) =>{
+      this.http.post(this.url + '/emp_chart_week', params,this.options)
+        .map(res => res.json())
+        .subscribe(data =>{
+          resolve(data);
+        },(error)=>{
+          reject(error);
         });
       });
   }
@@ -76,6 +109,22 @@ export class TipsService {
       });
   }
 
+  emp_yearly_chart(id){
+    var json = { 
+      id: id
+      };
+      var params = json;
+    return new Promise((resolve,reject) =>{
+      this.http.post(this.url + '/emp_chart_year', params,this.options)
+        .map(res => res.json())
+        .subscribe(data =>{
+          resolve(data);
+        },(error)=>{
+          reject(error);
+        });
+      });
+  }
+
   daily_chart_data(id){
     var json = { 
       id: id
@@ -86,6 +135,22 @@ export class TipsService {
         .map(res => res.json())
         .subscribe(data =>{
           resolve(data);
+        });
+      });
+  }
+
+  emp_daily_chart(id){
+    var json = { 
+      id: id
+      };
+      var params = json;
+    return new Promise((resolve,reject) =>{
+      this.http.post(this.url + '/emp_chart_daily', params,this.options)
+        .map(res => res.json())
+        .subscribe(data =>{
+          resolve(data);
+        },(error)=>{
+          reject(error);
         });
       });
   }

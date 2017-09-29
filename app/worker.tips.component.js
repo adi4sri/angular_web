@@ -42,7 +42,6 @@ var WorkerTipsComponent = (function () {
         this.tipsService.getWorkerTips(this.user.id)
             .then(function (data2) {
             _this.tips = data2;
-            console.log(_this.tips);
             _this.setPage(1);
             _this.loader = false;
         });
@@ -65,7 +64,6 @@ var WorkerTipsComponent = (function () {
         }
     };
     WorkerTipsComponent.prototype.selectAllId = function () {
-        console.log(this.isCheckedAll);
         this.tipId = [];
         if (this.isCheckedAll) {
             this.tipId = [];

@@ -47,9 +47,6 @@ var TippersComponent = (function () {
         this.pager = this.pagerService.getPager(this.tippers.length, page);
         // get current page of items
         this.pagedItems = this.tippers.slice(this.pager.startIndex, this.pager.endIndex + 1);
-        console.log(this.pager);
-        console.log(this.pagedItems);
-        console.log(this.tippers);
     };
     TippersComponent.prototype.isChecked = function (value) {
         return this.tipperId.includes(value);
@@ -61,10 +58,8 @@ var TippersComponent = (function () {
         else {
             this.tipperId.push(value);
         }
-        console.log('saalim', this.tipperId);
     };
     TippersComponent.prototype.selectAllId = function () {
-        console.log(this.isCheckedAll);
         this.tipperId = [];
         if (this.isCheckedAll) {
             this.tipperId = [];
@@ -76,21 +71,17 @@ var TippersComponent = (function () {
             }
         }
         this.isCheckedAll = !this.isCheckedAll;
-        console.log('saalim1', this.tipperId);
     };
     TippersComponent.prototype.deleteTipper = function () {
         var _this = this;
-        console.log('tipperID', this.tipperId);
         this.loader = true;
         this.tipsService.deleteTip(this.tipperId)
             .then(function (data) {
             _this.tippers = data;
-            console.log(data);
             _this.tipsService.getAllTips()
                 .then(function (data) {
                 _this.tippers = data;
                 _this.setPage(1);
-                console.log(data);
                 _this.loader = false;
             }); // close refresh
         });

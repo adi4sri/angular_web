@@ -62,6 +62,7 @@
         <div class="alert alert-danger" *ngIf="errorMessage">
           {{errorMessage}}
         </div>
+        <div [ngClass]="{'hidden':hideLoc}">
         <div class="group">
           <!-- <label for="hotelName">Name:</label> &nbsp; -->
           <input type="text" class="mtl-input" [(ngModel)]="hotelName" name="hotelName" required placeholder="HOTEL NAME">
@@ -92,14 +93,19 @@
           <input type="text" class="mtl-input" [(ngModel)]="hotelEmail" name="hotelEmail" required placeholder="EMAIL">
           <span class="bar"></span>
         </div>
+         <button class="btn btn-default btipt-btn-center" (click)="next()">Next</button>
+        </div>
 
+        <div [ngClass]="{'hidden':!hideLoc}">
+        Add first employee
         <div class="group">
           <!-- <label for="hotelCity">Email</label> &nbsp; -->
-          <input type="text" class="mtl-input" [(ngModel)]="hotelEmployee" name="hotelEmployee" required placeholder="MANAGER'S NAME">
+          <input type="text" class="mtl-input" [(ngModel)]="hotelEmployee" name="hotelEmployee" placeholder="NAME">
           <span class="bar"></span>
         </div>
 
         <button type="submit" class="btn btn-default btipt-btn-center" (click)="submitHotel()" [disabled]="loader">Add Location</button>
+        </div>
       </form>
       </div>
     </div>
@@ -122,7 +128,7 @@
    </thead>
    <div class="loader" *ngIf="loader"></div>
    <tbody *ngIf="!loader">
-      <tr *ngFor="let hotel of pagedItems | myfilter : searchHotel " (click)="displayHotel(hotel)" style="cursor: pointer;">
+      <tr *ngFor="let hotel of pagedItems | myfilter : searchHotel " style="cursor: pointer;">
          <td>
           <input type="checkbox" class="option-input hidden" name="select" id="{{hotel.id}}" 
            (click)="selectId(hotel.id)" value="{{hotel.id}}" [checked]="isChecked(hotel.id)" >
@@ -131,7 +137,7 @@
           <i class="material-icons text-grey" (click)="selectId(hotel.id)" *ngIf="!isChecked(hotel.id)">&#xE40C;</i>
 
          </td>
-         <td *ngIf="hotel.status == 1"><a (click)="view_hotel(hotel.id)" >{{hotel.name}}</a></td>
+         <td *ngIf="hotel.status == 1"><a (click)="view_hotel(hotel.id, hotel.email)" >{{hotel.name}}</a></td>
          <td *ngIf="hotel.status == 0">{{hotel.name}}</td>
          <td>{{hotel.address}}</td>
          <td>{{hotel.city}}</td>

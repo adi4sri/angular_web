@@ -11,7 +11,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
   constructor(private router:Router, public auth: Auth, private http: Http, private authHttp: AuthHttp){}
   canActivate() {
-    console.log('i am checking to see if you are logged in');
     if(!this.auth.authenticated()){
 
     	this.router.navigate(['/default']);
@@ -35,12 +34,10 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   }
 
   canActivateChild() {
-    console.log('checking child route access');
     return true;
   }
 
   canLoad(){
-    console.log('check load');
     if(this.auth.authenticated() && this.user.user_type=='worker'){
       this.router.navigate(['/home']);
       return false;
