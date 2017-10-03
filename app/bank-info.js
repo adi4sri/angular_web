@@ -35,6 +35,8 @@ var BankInfo = (function () {
             .then(function (data) {
             console.log(data);
             if (_this.auth.authenticated()) {
+                _this.user.default_funding_source = data.body.id;
+                localStorage.setItem("admin", JSON.stringify(_this.user));
                 _this.workersService.getBankInfo(_this.user.id)
                     .then(function (data1) {
                     console.log(data1);

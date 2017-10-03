@@ -34,9 +34,11 @@ export class BankInfo {
 		this.loader = true;
 		let name=this.f_name + ' ' + this.l_name;
 		this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.type, name)
-			.then(data=>{
+			.then((data:any)=>{
 				console.log(data);
 				if(this.auth.authenticated()){
+				this.user.default_funding_source = data.body.id;
+				localStorage.setItem("admin", JSON.stringify(this.user));
 		    	this.workersService.getBankInfo(this.user.id)
 		          .then((data1:any)=>{
 		              console.log(data1);
@@ -47,10 +49,7 @@ export class BankInfo {
 		                  window.location.reload();  
 		                },100); 
 		              }
-		             /* else if(this.user.user_roles_worker.worker_employees == true && this.user.login_type=='1' && data1['funding-sources'][0]){
-		                this.router.navigate(["/workers"]);
-		                window.location.reload();  
-		              }*/
+		            
 		              else if(this.user.user_roles_worker.tip_employee == true && this.user.login_type=='1' && data1['funding-sources'][0]){
 		                this.router.navigate(["/employee_tips"]);
 		                 setTimeout(function(){
@@ -63,10 +62,7 @@ export class BankInfo {
 		                  window.location.reload();  
 		                },100);
 		              }
-		              /*else if(this.user.user_roles_worker.reviews == true && this.user.login_type=='1' && data1['funding-sources'][0]){
-		                this.router.navigate(["/feedback"]);
-		                window.location.reload();  
-		              }*/
+		            
 		              else if(!data1['funding-sources'][0]){
 		                this.router.navigate(["/bank-info"]);
 		                 setTimeout(function(){
