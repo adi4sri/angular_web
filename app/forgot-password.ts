@@ -20,7 +20,10 @@ export class ForgotPassword {
   }
 
   forgot(){
-  	this.workersService.forgotPassword(this.email)
+  	let path = window.location.host;
+	let parts = path.split('.');
+	let sub_domain = parts[0];	
+  	this.workersService.forgotPassword(this.email, sub_domain)
 			.then(data => {
 				this.success= 'We have sent you an email. Please check your inbox to reset your password';
 			})

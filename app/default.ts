@@ -17,11 +17,25 @@ export class DefaultComponent {
  password:string;
  user:any = JSON.parse(localStorage.getItem('admin'));
  constructor(private auth: Auth, private http: Http, private authHttp: AuthHttp, private router:Router){
- 	if(this.user && this.user.user_type == 'admin'){
+ 	if(this.auth.authenticated()){
+ 		if(this.user && this.user.user_type == 'admin'){
  		this.router.navigate(['/hotels']);
- 	}else if(this.user &&  this.user.user_type == 'worker'){
- 		this.router.navigate(['/home']);
- 	}
- }
+	 	}else if(this.user &&  this.user.user_type == 'worker'){
+	 		this.router.navigate(['/home']);
+	 	}
+	}
+
+	else if(!this.auth.authenticated()){
+		var full = window.location.host;
+		var parts = full.split('.');
+		var sub_domain = parts[0];
+		if(sub_domain == 'admin'){
+			this.router.navigate(['/login']);
+		}
+		else{
+			this.router.navigate(['/worker-login']);	
+		}
+	}
+  }
  
 };

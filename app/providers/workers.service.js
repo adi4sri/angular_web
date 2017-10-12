@@ -40,11 +40,12 @@ var WorkersService = (function () {
             });
         });
     };
-    WorkersService.prototype.bulkEmp = function (workers, hotel_id) {
+    WorkersService.prototype.bulkEmp = function (workers, hotel_id, slug) {
         var _this = this;
         var postData = {
             workers: workers,
-            hotel_id: hotel_id
+            hotel_id: hotel_id,
+            slug: slug
         };
         return new Promise(function (resolve, reject) {
             _this.http.post(_this.url + 'users/worker/bulk', postData, _this.options)
@@ -278,10 +279,10 @@ var WorkersService = (function () {
             }, function (error) { return reject(error); }, function () { return console.log("Finished"); });
         });
     };
-    WorkersService.prototype.postWorker = function (name, email, hotel_id, login_type, department) {
+    WorkersService.prototype.postWorker = function (name, email, hotel_id, login_type, department, slug) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var json = { hotel_id: hotel_id, name: name, email: email, login_type: login_type, department: department };
+            var json = { hotel_id: hotel_id, name: name, email: email, login_type: login_type, department: department, slug: slug };
             var params = json;
             var postUrl = _this.url + 'users/worker';
             _this.http.post(postUrl, params, _this.options)
@@ -305,10 +306,10 @@ var WorkersService = (function () {
             }, function (error) { return reject(error); });
         });
     };
-    WorkersService.prototype.bankInfo = function (userId, routingNumber, accountNumber, type, name) {
+    WorkersService.prototype.bankInfo = function (userId, routingNumber, accountNumber, type, name, slug) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var json = { routingNumber: routingNumber, accountNumber: accountNumber, type: type, name: name };
+            var json = { routingNumber: routingNumber, accountNumber: accountNumber, type: type, name: name, slug: slug };
             var param = json;
             var postUrl = _this.url + 'users/worker/' + userId + '/funding-sources';
             _this.http.post(postUrl, param, _this.options)
@@ -470,10 +471,10 @@ var WorkersService = (function () {
             }, function (error) { return reject(error); }, function () { return console.log('User Roles Updated'); });
         });
     };
-    WorkersService.prototype.resend_token = function (email) {
+    WorkersService.prototype.resend_token = function (email, slug) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var data = { email: email };
+            var data = { email: email, slug: slug };
             var params = data;
             var headers = new http_1.Headers();
             headers.append('Content-Type', 'application/json');
@@ -483,11 +484,12 @@ var WorkersService = (function () {
                 .subscribe(function (data) { resolve(data); }, function (error) { return reject(error); }, function () { return console.log('Email Sent'); });
         });
     };
-    WorkersService.prototype.forgotPassword = function (email) {
+    WorkersService.prototype.forgotPassword = function (email, slug) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var data = {
-                email: email
+                email: email,
+                slug: slug
             };
             var body = data;
             var headers = new http_1.Headers();

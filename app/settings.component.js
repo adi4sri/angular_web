@@ -103,10 +103,21 @@ var SettingsComponent = (function () {
         }
         else {
             this.errorMessage = '';
-            this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.bankAccountType, this.name)
+            this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.bankAccountType, this.name, this.user.hotel_slug)
                 .then(function (data) {
                 console.log(data);
-                _this.getBankInfo();
+                _this.workersService.getBankInfo(_this.user.id)
+                    .then(function (data1) {
+                    console.log(data1);
+                    if (data1 && data1['funding-sources'] && data1['funding-sources'].length == 1) {
+                        _this.user.default_funding_source = data.body.id;
+                        localStorage.setItem("admin", JSON.stringify(_this.user));
+                        _this.getBankInfo();
+                    }
+                })
+                    .catch(function (error1) {
+                    console.log(error1);
+                });
                 $('#add_bank').modal('hide');
                 _this.name = '';
                 _this.routingNumber = '';

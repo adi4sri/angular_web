@@ -20,13 +20,21 @@ var AdminForgotPassword = (function () {
     }
     AdminForgotPassword.prototype.forgot = function () {
         var _this = this;
-        this.workersService.forgotPassAdmin(this.email)
-            .then(function (data) {
-            _this.success = 'We have sent you an email. Please check your inbox to reset your password';
-        })
-            .catch(function (error) {
-            _this.errorMessage = JSON.parse(error._body);
-        });
+        var path = window.location.host;
+        var parts = path.split('.');
+        var sub_domain = parts[0];
+        if (sub_domain == 'admin') {
+            this.workersService.forgotPassAdmin(this.email)
+                .then(function (data) {
+                _this.success = 'We have sent you an email. Please check your inbox to reset your password';
+            })
+                .catch(function (error) {
+                _this.errorMessage = JSON.parse(error._body);
+            });
+        }
+        else {
+            this.errorMessage = { message: "You are not authorized to use this resource." };
+        }
     };
     AdminForgotPassword = __decorate([
         core_1.Component({

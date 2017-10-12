@@ -23,7 +23,7 @@ export class BankInfo {
 	routingNumber:any;
 	accountNumber:any;
 	loader:boolean = false;
-
+	name:any;
 	constructor( 
 		private auth:Auth, private http:Http, 
 		private authHttp:AuthHttp, private workersService:WorkersService, 
@@ -32,8 +32,9 @@ export class BankInfo {
 
 	submitBankInfo(){
 		this.loader = true;
-		let name=this.f_name + ' ' + this.l_name;
-		this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.type, name)
+		this.name=this.f_name + ' ' + this.l_name;
+
+		this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.type, this.name, this.user.hotel_slug)
 			.then((data:any)=>{
 				console.log(data);
 				if(this.auth.authenticated()){

@@ -23,6 +23,10 @@ export class AdminCreateNewPassword {
 	}
 
 	createPassword(){
+	let path = window.location.host;
+	let parts = path.split('.');
+	let sub_domain = parts[0];
+	if(sub_domain=='admin'){
 		if(this.password.length < 8){
 			this.errorMessage = 'Password must be atleast 8 characters long!';
 		}
@@ -48,5 +52,8 @@ export class AdminCreateNewPassword {
 						}
 					});
 		}
+	}else{
+		this.errorMessage = "You are not authorized to use this resource.";
+	}
 	}
 };

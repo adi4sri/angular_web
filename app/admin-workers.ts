@@ -213,7 +213,7 @@ checkEmp(){
       this.loader = false;
     }
     else if(this.csvData){
-      this.workerService.bulkEmp(this.csvData, this.workers_hotel)
+      this.workerService.bulkEmp(this.csvData, this.workers_hotel.id, this.workers_hotel.slug)
       .then((data1:any)=>{
         this.workerService.getAllWorkers()
           .then((data2:any) => {
@@ -347,7 +347,7 @@ checkEmp(){
 
   resend_account_link(){
     this.loader = true;
-    this.workerService.resend_token(this.worker.email)
+    this.workerService.resend_token(this.worker.email, this.worker.hotel_slug)
       .then(data => {
           this.send_success = 'Email has been sent successfully!';
           this.loader = false;
@@ -373,7 +373,7 @@ checkEmp(){
       this.errorMessage = 'Please fill all fields correctly';
     }else{
         this.loader=true;
-        this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.dept_selected)
+        this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.dept_selected, this.hotel_data.slug)
           .then(data2 => {
             // refresh pending worker list for display
             this.workerService.getAllWorkers()

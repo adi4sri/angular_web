@@ -54,6 +54,7 @@ var WorkersPage = (function () {
             _this.hotels = data2;
             _this.loader = false;
         });
+        console.log('USER', this.user);
     }
     WorkersPage.prototype.search_worker = function () {
         var _this = this;
@@ -175,7 +176,7 @@ var WorkersPage = (function () {
     WorkersPage.prototype.resend_account_link = function () {
         var _this = this;
         this.loader = true;
-        this.workerService.resend_token(this.worker.email)
+        this.workerService.resend_token(this.worker.email, this.worker.hotel_slug)
             .then(function (data) {
             _this.send_success = 'Email has been sent successfully!';
             _this.loader = false;
@@ -201,7 +202,7 @@ var WorkersPage = (function () {
             this.errorMessage = 'Please fill all fields correctly';
         }
         else {
-            this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
+            this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department, this.user.hotel_slug)
                 .then(function (data2) {
                 // refresh pending worker list for display
                 _this.workerService.getWorkers(_this.user.hotel_id)

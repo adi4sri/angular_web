@@ -27,30 +27,38 @@ var AdminCreateNewPassword = (function () {
     }
     AdminCreateNewPassword.prototype.createPassword = function () {
         var _this = this;
-        if (this.password.length < 8) {
-            this.errorMessage = 'Password must be atleast 8 characters long!';
-        }
-        else if (this.password != this.password2) {
-            this.errorMessage = 'Password did not matched!';
+        var path = window.location.host;
+        var parts = path.split('.');
+        var sub_domain = parts[0];
+        if (sub_domain == 'admin') {
+            if (this.password.length < 8) {
+                this.errorMessage = 'Password must be atleast 8 characters long!';
+            }
+            else if (this.password != this.password2) {
+                this.errorMessage = 'Password did not matched!';
+            }
+            else {
+                this.token = this.route.snapshot.params['token'];
+                this.workersService.createNewPassAdmin(this.token, this.password2)
+                    .then(function (data) {
+                    setTimeout(function (router) {
+                        _this.router.navigate(["/login"]);
+                    }, 3000);
+                    _this.success = "Password has been created. You will be redirected to login page in 3 seconds.";
+                })
+                    .catch(function (error) {
+                    if (error._body.message) {
+                        _this.errorMessage = JSON.parse(error._body.message);
+                    }
+                    else {
+                        _this.errorMessage = "Invaild Request. Please contact adminstrator, if you are lost.";
+                        console.log(_this.errorMessage);
+                    }
+                });
+            }
         }
         else {
-            this.token = this.route.snapshot.params['token'];
-            this.workersService.createNewPassAdmin(this.token, this.password2)
-                .then(function (data) {
-                setTimeout(function (router) {
-                    _this.router.navigate(["/login"]);
-                }, 3000);
-                _this.success = "Password has been created. You will be redirected to login page in 3 seconds.";
-            })
-                .catch(function (error) {
-                if (error._body.message) {
-                    _this.errorMessage = JSON.parse(error._body.message);
-                }
-                else {
-                    _this.errorMessage = "Invaild Request. Please contact adminstrator, if you are lost.";
-                    console.log(_this.errorMessage);
-                }
-            });
+            this.errorMessage = "You are not authorized to use this resource.";
         }
     };
     AdminCreateNewPassword = __decorate([

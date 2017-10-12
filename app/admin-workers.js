@@ -171,7 +171,7 @@ var AdminWorkers = (function () {
                 _this.loader = false;
             }
             else if (_this.csvData) {
-                _this.workerService.bulkEmp(_this.csvData, _this.workers_hotel)
+                _this.workerService.bulkEmp(_this.csvData, _this.workers_hotel.id, _this.workers_hotel.slug)
                     .then(function (data1) {
                     _this.workerService.getAllWorkers()
                         .then(function (data2) {
@@ -295,7 +295,7 @@ var AdminWorkers = (function () {
     AdminWorkers.prototype.resend_account_link = function () {
         var _this = this;
         this.loader = true;
-        this.workerService.resend_token(this.worker.email)
+        this.workerService.resend_token(this.worker.email, this.worker.hotel_slug)
             .then(function (data) {
             _this.send_success = 'Email has been sent successfully!';
             _this.loader = false;
@@ -321,7 +321,7 @@ var AdminWorkers = (function () {
         }
         else {
             this.loader = true;
-            this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.dept_selected)
+            this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.dept_selected, this.hotel_data.slug)
                 .then(function (data2) {
                 // refresh pending worker list for display
                 _this.workerService.getAllWorkers()

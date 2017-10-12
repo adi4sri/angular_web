@@ -86,12 +86,15 @@ var HotelsPage = (function () {
         this.pagedItems = this.hotels.slice(this.pager.startIndex, this.pager.endIndex + 1);
     };
     HotelsPage.prototype.next = function () {
-        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail) {
+        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelSubDomain) {
             this.errorMessage = 'Please fill all the fields correctly';
         }
         else {
             this.hideLoc = true;
         }
+    };
+    HotelsPage.prototype.back = function () {
+        this.hideLoc = false;
     };
     HotelsPage.prototype.updateHotelStatus = function (hotelId, status) {
         var _this = this;
@@ -192,12 +195,12 @@ var HotelsPage = (function () {
     HotelsPage.prototype.submitHotel = function () {
         var _this = this;
         this.loader = true;
-        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelEmployee) {
+        if (!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelEmployee || !this.hotelSubDomain) {
             this.errorMessage = 'Please fill all the fields correctly';
             this.loader = false;
         }
         else {
-            this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee)
+            this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee, this.hotelSubDomain)
                 .then(function (data) {
                 // refresh hotel list  
                 _this.hotelService.getHotels()
@@ -217,7 +220,9 @@ var HotelsPage = (function () {
                 _this.hideLoc = false;
             })
                 .catch(function (error) {
-                _this.errorMessage = 'Account with this email already exist';
+                console.log(error);
+                _this.errorMessage = JSON.parse(error._body);
+                _this.errorMessage = _this.errorMessage.error;
                 _this.loader = false;
             });
         }

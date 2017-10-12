@@ -75,7 +75,7 @@ export class WorkersPage {
           this.hotels = data2;
             this.loader = false;        
           });
-
+          console.log('USER',this.user);
 
 }
 
@@ -209,7 +209,7 @@ export class WorkersPage {
 
   resend_account_link(){
     this.loader = true;
-    this.workerService.resend_token(this.worker.email)
+    this.workerService.resend_token(this.worker.email, this.worker.hotel_slug)
       .then(data => {
           this.send_success = 'Email has been sent successfully!';
           this.loader = false;
@@ -234,7 +234,7 @@ export class WorkersPage {
     if(!this.l_name || !this.f_name || !this.email || this.hotel_id == "none" || !this.login_type){
       this.errorMessage = 'Please fill all fields correctly';
     }else{
-    this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department)
+    this.workerService.postWorker(this.name, this.email, this.hotel_id, this.login_type, this.hotel_department, this.user.hotel_slug)
       .then(data2 => {
         // refresh pending worker list for display
         this.workerService.getWorkers(this.user.hotel_id)

@@ -30,8 +30,8 @@ var BankInfo = (function () {
     BankInfo.prototype.submitBankInfo = function () {
         var _this = this;
         this.loader = true;
-        var name = this.f_name + ' ' + this.l_name;
-        this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.type, name)
+        this.name = this.f_name + ' ' + this.l_name;
+        this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.type, this.name, this.user.hotel_slug)
             .then(function (data) {
             console.log(data);
             if (_this.auth.authenticated()) {

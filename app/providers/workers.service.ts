@@ -40,10 +40,11 @@ export class WorkersService {
     });
   }
 
-  bulkEmp(workers, hotel_id){
+  bulkEmp(workers, hotel_id, slug){
     var postData={
       workers:workers,
-      hotel_id:hotel_id
+      hotel_id:hotel_id,
+      slug:slug
     };
     return new Promise((resolve,reject)=>{
       this.http.post(this.url + 'users/worker/bulk', postData, this.options)
@@ -290,9 +291,9 @@ export class WorkersService {
   }
 
 
-    postWorker(name, email, hotel_id, login_type, department) {
+    postWorker(name, email, hotel_id, login_type, department, slug) {
     return new Promise((resolve,reject) => {
-    var json = { hotel_id: hotel_id, name: name, email: email, login_type: login_type, department: department};
+    var json = { hotel_id: hotel_id, name: name, email: email, login_type: login_type, department: department, slug:slug};
     var params = json;
     let postUrl = this.url + 'users/worker';
 
@@ -324,9 +325,9 @@ export class WorkersService {
       });
   }
 
-  bankInfo(userId, routingNumber, accountNumber, type, name){
+  bankInfo(userId, routingNumber, accountNumber, type, name, slug){
    return new Promise((resolve, reject)=>{
-      var json = {routingNumber: routingNumber, accountNumber: accountNumber,type:type, name:name};
+      var json = {routingNumber: routingNumber, accountNumber: accountNumber,type:type, name:name, slug: slug};
       var param = json;
       let postUrl = this.url + 'users/worker/'+ userId + '/funding-sources';
 
@@ -520,9 +521,9 @@ export class WorkersService {
       });
   }
 
-  resend_token(email){
+  resend_token(email, slug){
     return new Promise((resolve, reject)=>{
-      var data={email:email};
+      var data={email:email, slug:slug};
       var params = data;
       var headers = new Headers();
       headers.append('Content-Type', 'application/json');
@@ -535,10 +536,11 @@ export class WorkersService {
       });
   }
 
-  forgotPassword(email){
+  forgotPassword(email, slug){
     return new Promise((resolve,reject)=>{
       var data={
-        email:email
+        email:email,
+        slug: slug
       };
       var body = data;
       var headers = new Headers();

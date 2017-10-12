@@ -46,7 +46,7 @@
       </div>
       <div class="col-sm-6">
         <select [(ngModel)]="workers_hotel" name="workers_hotel" (change)="handleHotelSelect()" class="select_hotel">
-          <option *ngFor="let hotel of hotels"  [ngValue]="hotel.id">{{hotel.name}}</option>
+          <option *ngFor="let hotel of hotels"  [ngValue]="hotel">{{hotel.name}}</option>
         </select>
       </div>        
       </div>

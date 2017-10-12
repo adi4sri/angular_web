@@ -20,7 +20,10 @@ var ForgotPassword = (function () {
     }
     ForgotPassword.prototype.forgot = function () {
         var _this = this;
-        this.workersService.forgotPassword(this.email)
+        var path = window.location.host;
+        var parts = path.split('.');
+        var sub_domain = parts[0];
+        this.workersService.forgotPassword(this.email, sub_domain)
             .then(function (data) {
             _this.success = 'We have sent you an email. Please check your inbox to reset your password';
         })

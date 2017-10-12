@@ -83,7 +83,10 @@ var WorkerLoginComponent = (function () {
     WorkerLoginComponent.prototype.loginUser = function () {
         var _this = this;
         this.loader = true;
-        this.auth.workerLogin(this.email, this.password, 'worker')
+        var path = window.location.host;
+        var parts = path.split('.');
+        var sub_domain = parts[0];
+        this.auth.workerLogin(this.email, this.password, 'worker', sub_domain)
             .then(function (data) {
             console.log('UserData', data);
             data.user_type = 'worker';

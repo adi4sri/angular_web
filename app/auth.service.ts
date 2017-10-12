@@ -35,9 +35,9 @@ export class Auth {
     });
   };
 
-  workerLogin(email, password, user_type) {
+  workerLogin(email, password, user_type, slug) {
     return new Promise((resolve,reject) => { 
-    var data = {email: email, password: password, user_type: user_type};
+    var data = {email: email, password: password, user_type: user_type, slug:slug};
     console.log(data);
     let postUrl = this.url + 'users/worker/login';
     

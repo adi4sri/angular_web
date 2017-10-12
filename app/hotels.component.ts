@@ -29,6 +29,7 @@ export class HotelsPage {
   hotelAddress: any;
   hotelZip: any;
   hotelEmail: any;
+  hotelSubDomain:any;
   hotelEmployee: any;
   workers:any;
   searchHotel:any;
@@ -111,12 +112,15 @@ export class HotelsPage {
     }
 
     next(){
-      if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail){
+      if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelSubDomain){
         this.errorMessage = 'Please fill all the fields correctly';
       }
       else{
         this.hideLoc = true;
       }
+    }
+    back(){
+        this.hideLoc = false;
     }
 
   updateHotelStatus(hotelId,status){
@@ -225,12 +229,12 @@ export class HotelsPage {
   //add worker to allowed workers list for signup - need to put in real hotel_id here
   submitHotel() {
     this.loader = true;
-    if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelEmployee){
+    if(!this.hotelName || !this.hotelCity || !this.hotelAddress || !this.hotelZip || !this.hotelEmail || !this.hotelEmployee || !this.hotelSubDomain){
       this.errorMessage = 'Please fill all the fields correctly';
       this.loader = false;       
     }
     else{
-        this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee)
+        this.hotelService.postHotel(this.hotelName, this.hotelCity, this.hotelAddress, this.hotelZip, this.hotelEmail, this.hotelEmployee, this.hotelSubDomain)
           .then(data => {
           // refresh hotel list  
           this.hotelService.getHotels()
@@ -250,7 +254,9 @@ export class HotelsPage {
             this.hideLoc = false;
           })
           .catch(error =>{
-            this.errorMessage = 'Account with this email already exist';
+            console.log(error);
+            this.errorMessage = JSON.parse(error._body);
+            this.errorMessage = this.errorMessage.error;
             this.loader = false;  
             });}
   }

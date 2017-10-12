@@ -121,10 +121,22 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 			this.loader = false;
 		}else{
 			this.errorMessage = '';
-			this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.bankAccountType, this.name)
-				.then(data=>{
+
+			this.workersService.bankInfo(this.user.id, this.routingNumber, this.accountNumber, this.bankAccountType, this.name, this.user.hotel_slug)
+				.then((data:any)=>{
 					console.log(data);
-					this.getBankInfo();
+					this.workersService.getBankInfo(this.user.id)
+					.then((data1:any) =>{
+						console.log(data1);
+						if(data1 && data1['funding-sources'] && data1['funding-sources'].length==1){
+							this.user.default_funding_source = data.body.id;
+							localStorage.setItem("admin", JSON.stringify(this.user));
+							this.getBankInfo();
+						}
+						})
+					.catch((error1:any)=>{
+						console.log(error1);
+						});
 					$('#add_bank').modal('hide');
 					this.name = '';
 					this.routingNumber = '';
@@ -132,7 +144,7 @@ view_hotel_mode = JSON.parse(localStorage.getItem('view_hotel'));
 					this.bankAccountType = '';
 					this.loader = false;
 					})
-				.catch(error=>{
+				.catch((error:any)=>{
 					this.errorMessage = JSON.parse(error._body);
 					this.errorMessage = (JSON.parse(this.errorMessage.message));
 					console.log(this.errorMessage);

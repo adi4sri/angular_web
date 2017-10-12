@@ -85,7 +85,10 @@ export class WorkerLoginComponent {
   
  loginUser(){
   this.loader = true;
-	this.auth.workerLogin(this.email,this.password, 'worker')
+  let path = window.location.host;
+  let parts = path.split('.');
+  let sub_domain = parts[0];
+	this.auth.workerLogin(this.email,this.password, 'worker', sub_domain)
       .then((data:any) => {
         console.log('UserData',data);
         data.user_type='worker';

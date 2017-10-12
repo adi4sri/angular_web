@@ -44,10 +44,10 @@ var Auth = (function () {
         });
     };
     ;
-    Auth.prototype.workerLogin = function (email, password, user_type) {
+    Auth.prototype.workerLogin = function (email, password, user_type, slug) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var data = { email: email, password: password, user_type: user_type };
+            var data = { email: email, password: password, user_type: user_type, slug: slug };
             console.log(data);
             var postUrl = _this.url + 'users/worker/login';
             _this.http
