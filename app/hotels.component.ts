@@ -208,7 +208,30 @@ export class HotelsPage {
         this.hotels = data2;
         this.setPage(1);
           this.loader = false;
-        });// close refresh
+        });
+      this.tipsService.getAllTips()
+        .then(data2 =>{
+          this.tippers = data2;
+          this.loader = false;
+          let total = 0;
+          for (var i = 0; i < this.tippers.length; i++) {
+            if (this.tippers[i].amount) {
+              total += parseFloat(this.tippers[i].amount);
+              this.totalamount = total;
+            }
+          }
+        });
+        this.workersService.getAllWorkers()
+        .then(data2 => {
+          this.workers = data2;
+          this.loader = false;
+          for(let i=0; i < this.workers.length; i++){
+            this.worker_count.push(this.workers[i].hotel_id);
+          }
+          this.worker_count.sort();
+
+       });// close refresh
+
       })
     .catch(error =>{
         this.loader = false;
@@ -242,7 +265,29 @@ export class HotelsPage {
             this.hotels = data2;
             this.setPage(1);
               this.loader = false;       
-            });// close refresh
+            });
+            this.tipsService.getAllTips()
+            .then(data2 =>{
+              this.tippers = data2;
+              this.loader = false;
+              let total = 0;
+              for (var i = 0; i < this.tippers.length; i++) {
+                if (this.tippers[i].amount) {
+                  total += parseFloat(this.tippers[i].amount);
+                  this.totalamount = total;
+                }
+              }
+            });
+            this.workersService.getAllWorkers()
+            .then(data2 => {
+              this.workers = data2;
+              this.loader = false;
+              for(let i=0; i < this.workers.length; i++){
+                this.worker_count.push(this.workers[i].hotel_id);
+              }
+              this.worker_count.sort();
+
+           });// close refresh
             this.hotelForm = false;
             $('#addHotelModal').modal('hide');
             this.hotelName='';

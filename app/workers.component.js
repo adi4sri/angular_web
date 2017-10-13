@@ -130,10 +130,14 @@ var WorkersPage = (function () {
             _this.loader = false;
             _this.workerService.getWorkers(_this.user.hotel_id)
                 .then(function (data) {
+                _this.deleteMessage = '';
                 _this.workers = data;
                 _this.setPage(1);
                 _this.loader = false;
-            }); // close refresh
+            });
+        })
+            .catch(function (error) {
+            _this.deleteMessage = 'Error while deleting record. Please try again!';
         });
     };
     WorkersPage.prototype.showForm = function () {

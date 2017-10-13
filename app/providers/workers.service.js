@@ -200,7 +200,7 @@ var WorkersService = (function () {
     WorkersService.prototype.deleteWorkers = function (workerlId) {
         var _this = this;
         // Dont have the data yet
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             var json = {
                 id: workerlId
             };
@@ -209,6 +209,8 @@ var WorkersService = (function () {
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
+            }, function (error) {
+                reject(error);
             });
         });
     };

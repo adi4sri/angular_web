@@ -45,6 +45,7 @@ export class WorkersPage {
   updateForm:boolean;
   errorMessage:any;
   bankInfo:any;
+  deleteMessage:any;
   constructor(private auth: Auth, 
   private http: Http,
   private workerService: WorkersService,
@@ -160,12 +161,15 @@ export class WorkersPage {
       this.loader=false;
       this.workerService.getWorkers(this.user.hotel_id)
         .then(data => {
-        this.workers = data;
-        this.setPage(1);
+          this.deleteMessage = '';
+          this.workers = data;
+          this.setPage(1);
           this.loader = false;     
-        });// close refresh
-
-      });
+        });
+      })
+    .catch(error=>{
+      this.deleteMessage = 'Error while deleting record. Please try again!';
+    });
   }
 
   showForm() {

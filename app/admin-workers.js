@@ -247,12 +247,17 @@ var AdminWorkers = (function () {
             .then(function (data) {
             _this.loader = false;
             _this.workers = data;
+            _this.workerId = [];
             _this.workerService.getAllWorkers()
                 .then(function (data) {
+                _this.deleteMessage = '';
                 _this.workers = data;
                 _this.setPage(1);
                 _this.loader = false;
             }); // close refresh
+        })
+            .catch(function (error) {
+            _this.deleteMessage = 'Error while deleting record. Please try again!';
         });
     };
     AdminWorkers.prototype.showForm = function () {

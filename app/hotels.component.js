@@ -176,6 +176,27 @@ var HotelsPage = (function () {
                 _this.hotels = data2;
                 _this.setPage(1);
                 _this.loader = false;
+            });
+            _this.tipsService.getAllTips()
+                .then(function (data2) {
+                _this.tippers = data2;
+                _this.loader = false;
+                var total = 0;
+                for (var i = 0; i < _this.tippers.length; i++) {
+                    if (_this.tippers[i].amount) {
+                        total += parseFloat(_this.tippers[i].amount);
+                        _this.totalamount = total;
+                    }
+                }
+            });
+            _this.workersService.getAllWorkers()
+                .then(function (data2) {
+                _this.workers = data2;
+                _this.loader = false;
+                for (var i = 0; i < _this.workers.length; i++) {
+                    _this.worker_count.push(_this.workers[i].hotel_id);
+                }
+                _this.worker_count.sort();
             }); // close refresh
         })
             .catch(function (error) {
@@ -208,6 +229,27 @@ var HotelsPage = (function () {
                     _this.hotels = data2;
                     _this.setPage(1);
                     _this.loader = false;
+                });
+                _this.tipsService.getAllTips()
+                    .then(function (data2) {
+                    _this.tippers = data2;
+                    _this.loader = false;
+                    var total = 0;
+                    for (var i = 0; i < _this.tippers.length; i++) {
+                        if (_this.tippers[i].amount) {
+                            total += parseFloat(_this.tippers[i].amount);
+                            _this.totalamount = total;
+                        }
+                    }
+                });
+                _this.workersService.getAllWorkers()
+                    .then(function (data2) {
+                    _this.workers = data2;
+                    _this.loader = false;
+                    for (var i = 0; i < _this.workers.length; i++) {
+                        _this.worker_count.push(_this.workers[i].hotel_id);
+                    }
+                    _this.worker_count.sort();
                 }); // close refresh
                 _this.hotelForm = false;
                 $('#addHotelModal').modal('hide');

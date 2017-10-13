@@ -59,6 +59,7 @@ export class AdminWorkers {
   workers_hotel:any;
   dropdown_hotels:any;
   bankInfo:any;
+  deleteMessage:any;
   constructor(private auth: Auth, 
   private http: Http,
   private workerService: WorkersService,
@@ -296,14 +297,18 @@ checkEmp(){
     .then(data =>{
       this.loader=false;
       this.workers = data;
+      this.workerId = [];
       this.workerService.getAllWorkers()
         .then(data => {
+          this.deleteMessage = '';
         this.workers = data;
         this.setPage(1);
           this.loader = false;     
         });// close refresh
-
-      });
+      })
+    .catch(error=>{
+      this.deleteMessage = 'Error while deleting record. Please try again!';
+    });
   }
 
   showForm() {

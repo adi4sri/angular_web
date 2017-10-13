@@ -204,7 +204,7 @@ export class WorkersService {
 
   deleteWorkers(workerlId) {
     // Dont have the data yet
-    return new Promise(resolve => {
+    return new Promise((resolve,reject) => {
       var json = { 
       id: workerlId
       };
@@ -213,6 +213,9 @@ export class WorkersService {
         .map(res => res.json())
         .subscribe(data => {
           resolve(data);
+        },
+        error=>{
+          reject(error);
         });
     });
   }
