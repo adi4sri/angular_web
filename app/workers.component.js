@@ -137,6 +137,7 @@ var WorkersPage = (function () {
             });
         })
             .catch(function (error) {
+            _this.loader = false;
             _this.deleteMessage = 'Error while deleting record. Please try again!';
         });
     };
@@ -226,6 +227,9 @@ var WorkersPage = (function () {
                 var msg = JSON.parse(error._body);
                 if (msg) {
                     _this.validEmail = 'Account already exist with this email!';
+                    setTimeout(function () {
+                        document.getElementById("validEmail").style.display = 'none';
+                    }, 3000);
                 }
                 _this.loader = false;
             }); // end post

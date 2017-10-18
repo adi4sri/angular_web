@@ -40,7 +40,7 @@
       </div> -->
       <div *ngIf="loader" class="loader"></div>
       <div class="modal-body" *ngIf="!loader">
-      <div class="alert alert-danger" *ngIf="validEmail">
+      <div class="alert alert-danger" id="validEmail" *ngIf="validEmail">
         {{validEmail}}
       </div>
       <div class="alert alert-danger" *ngIf="errorMessage">

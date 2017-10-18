@@ -176,6 +176,10 @@ var HotelsPage = (function () {
                 _this.hotels = data2;
                 _this.setPage(1);
                 _this.loader = false;
+            })
+                .catch(function (error) {
+                console.log(error);
+                _this.loader = false;
             });
             _this.tipsService.getAllTips()
                 .then(function (data2) {
@@ -188,6 +192,10 @@ var HotelsPage = (function () {
                         _this.totalamount = total;
                     }
                 }
+            })
+                .catch(function (error1) {
+                console.log(error1);
+                _this.loader = false;
             });
             _this.workersService.getAllWorkers()
                 .then(function (data2) {
@@ -197,10 +205,19 @@ var HotelsPage = (function () {
                     _this.worker_count.push(_this.workers[i].hotel_id);
                 }
                 _this.worker_count.sort();
+            })
+                .catch(function (error) {
+                console.log(error);
+                _this.loader = false;
             }); // close refresh
         })
             .catch(function (error) {
+            console.log(error);
+            _this.del_errorMessage = "An error occured while deleting hotel. Please try again!";
             _this.loader = false;
+            setTimeout(function () {
+                document.getElementById("deleteMessage").style.display = 'none';
+            }, 3000);
         });
     };
     HotelsPage.prototype.showForm = function () {

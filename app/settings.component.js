@@ -112,8 +112,20 @@ var SettingsComponent = (function () {
                     if (data1 && data1['funding-sources'] && data1['funding-sources'].length == 1) {
                         _this.user.default_funding_source = data.body.id;
                         localStorage.setItem("admin", JSON.stringify(_this.user));
-                        _this.getBankInfo();
                     }
+                    _this.loader = true;
+                    _this.workersService.getBankInfo(_this.user.id)
+                        .then(function (data) {
+                        if (data && data['funding-sources']) {
+                            _this.bankInfo = data['funding-sources'];
+                        }
+                        console.log(_this.bankInfo);
+                        _this.loader = false;
+                    })
+                        .catch(function (error) {
+                        _this.loader = false;
+                        console.log(error);
+                    });
                 })
                     .catch(function (error1) {
                     console.log(error1);
@@ -124,6 +136,10 @@ var SettingsComponent = (function () {
                 _this.accountNumber = '';
                 _this.bankAccountType = '';
                 _this.loader = false;
+                setTimeout(function () {
+                    document.getElementById("errorMessage").style.display = 'none';
+                    document.getElementById("errorMessage2").style.display = 'none';
+                }, 3000);
             })
                 .catch(function (error) {
                 _this.errorMessage = JSON.parse(error._body);

@@ -92,9 +92,9 @@ export class AdminWorkers {
           this.hotels = data2;
           this.dropdown_hotels=data2;
             
-            this.dropdown_hotels.unshift({id:'none', name:'Please Select Hotel'});
-            this.workers_hotel = this.dropdown_hotels[0].id;
-            this.loader = false;        
+          //this.dropdown_hotels.unshift({id:'none', name:'Please Select Hotel'});
+          this.workers_hotel = this.dropdown_hotels[0].id;
+          this.loader = false;        
           });
 
 
@@ -307,6 +307,7 @@ checkEmp(){
         });// close refresh
       })
     .catch(error=>{
+      this.loader=false;
       this.deleteMessage = 'Error while deleting record. Please try again!';
     });
   }
@@ -396,6 +397,9 @@ checkEmp(){
           })
           .catch(error=>{
             this.validEmail = 'Sorry! User already exist with this email.';
+            setTimeout(function(){
+              document.getElementById("validEmail").style.display = 'none';
+            },3000);
             this.loader=false;      
 
           }); // end post

@@ -4,7 +4,7 @@
 
 	<div class="alert alert-danger" *ngIf="errorMessage">{{errorMessage.message}}</div>
 	<div class="loader" *ngIf="loader"></div>
-	<form *ngIf="!loader">
+	<div *ngIf="!loader">
 		<div class="form-group input-group">
 			<span class="input-group-addon"><i class="fa fa-envelope-o"></i></span>
 			<input type="email" placeholder="Email" [(ngModel)]="email" class="form-control" name="email"/>
@@ -18,6 +18,6 @@
 				Login
 			</button>
 		</div>
-	</form>
+	</div>
 	<p *ngIf="!loader" class="text-center forgot-password" (click)="forgotPassword()">Forgot Username or Password?</p>
 </div>

@@ -57,7 +57,7 @@ var AdminWorkers = (function () {
             .then(function (data2) {
             _this.hotels = data2;
             _this.dropdown_hotels = data2;
-            _this.dropdown_hotels.unshift({ id: 'none', name: 'Please Select Hotel' });
+            //this.dropdown_hotels.unshift({id:'none', name:'Please Select Hotel'});
             _this.workers_hotel = _this.dropdown_hotels[0].id;
             _this.loader = false;
         });
@@ -257,6 +257,7 @@ var AdminWorkers = (function () {
             }); // close refresh
         })
             .catch(function (error) {
+            _this.loader = false;
             _this.deleteMessage = 'Error while deleting record. Please try again!';
         });
     };
@@ -344,6 +345,9 @@ var AdminWorkers = (function () {
             })
                 .catch(function (error) {
                 _this.validEmail = 'Sorry! User already exist with this email.';
+                setTimeout(function () {
+                    document.getElementById("validEmail").style.display = 'none';
+                }, 3000);
                 _this.loader = false;
             }); // end post
         }

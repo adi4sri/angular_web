@@ -80,6 +80,7 @@
         <div id="bank_remove_success" class="alert alert-success" *ngIf="bank_remove_success">
           Bank removed successfully!
         </div>
+        <div class="loader" *ngIf="loader"></div>
        <div class="group" *ngFor="let bank of bankInfo">
         <div>
             <!-- <input type="text" class="mtl-input" required value="{{bank.bankName}} ****" disabled>
@@ -130,8 +131,8 @@
         </div>
         <div class="padding">
         <form>
-        <div class="text-danger" *ngIf="errorMessage">{{errorMessage.message}}</div>
-        <div class="text-danger" *ngIf="errorMessage2">{{errorMessage}}</div>
+        <div class="text-danger" id="erroMessage" *ngIf="errorMessage">{{errorMessage.message}}</div>
+        <div class="text-danger" id="erroMessage2" *ngIf="errorMessage2">{{errorMessage}}</div>
 
         <div class="text-danger" *ngFor="let error of errors ">{{error.message}}</div>
           <div class="control-group">
@@ -148,7 +149,7 @@
           </div>
           <div class="control-group">
             <label class="">Account Type</label>
-            <select class="form-control" [(ngModel)]="bankAccountType" name="bankAccountType">
+            <select class="form-control" style="padding:0 0 0 10px!important;" [(ngModel)]="bankAccountType" name="bankAccountType">
               <option value="savings">Savings</option>
               <option value="checking">Checking</option>
             </select>
@@ -186,7 +187,7 @@
           </div> -->
           <div class="control-group">
             <label class="">Account Type</label>
-            <select class="form-control" [(ngModel)]="bankDetails.bankAccountType" name="bankAccountType" disabled>
+            <select style="padding:0 0 0 10px!important;" class="form-control" [(ngModel)]="bankDetails.bankAccountType" name="bankAccountType" disabled>
               <option value="savings">Savings</option>
               <option value="checking">Checking</option>
             </select>
@@ -259,7 +260,7 @@
             required
           />
           <div class="input-group-btn">
-            <button class="btn btn-danger" type="submit" (click)="removeDept(i)">
+            <button style="max-height:33px;" class="btn btn-danger" type="submit" (click)="removeDept(i)">
               <i class="fa fa-minus-circle"></i>
             </button>
           </div>

@@ -84,7 +84,7 @@ var HotelsService = (function () {
     HotelsService.prototype.deleteHotels = function (hotelId) {
         var _this = this;
         // Dont have the data yet
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             var json = {
                 id: hotelId
             };
@@ -93,6 +93,8 @@ var HotelsService = (function () {
                 .map(function (res) { return res.json(); })
                 .subscribe(function (data) {
                 resolve(data);
+            }, function (error) {
+                reject(error);
             });
         });
     };

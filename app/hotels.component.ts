@@ -49,6 +49,7 @@ export class HotelsPage {
   pagedItems: any[];
   totalamount:any;
   errorMessage:any;
+  del_errorMessage:any;
   hideLoc:boolean = false;
   shadow:any;
   constructor(private auth: Auth, 
@@ -208,6 +209,10 @@ export class HotelsPage {
         this.hotels = data2;
         this.setPage(1);
           this.loader = false;
+        })
+        .catch(error=>{
+          console.log(error);
+          this.loader = false;
         });
       this.tipsService.getAllTips()
         .then(data2 =>{
@@ -220,6 +225,10 @@ export class HotelsPage {
               this.totalamount = total;
             }
           }
+        })
+        .catch(error1=>{
+          console.log(error1);
+          this.loader = false;
         });
         this.workersService.getAllWorkers()
         .then(data2 => {
@@ -230,11 +239,20 @@ export class HotelsPage {
           }
           this.worker_count.sort();
 
-       });// close refresh
+       })
+        .catch(error=>{
+          console.log(error);
+          this.loader = false;
+        });// close refresh
 
       })
     .catch(error =>{
+        console.log(error);
+        this.del_errorMessage = "An error occured while deleting hotel. Please try again!";
         this.loader = false;
+        setTimeout(function(){
+          document.getElementById("deleteMessage").style.display = 'none';
+        },3000);
       });
   }
 

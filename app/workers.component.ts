@@ -168,6 +168,7 @@ export class WorkersPage {
         });
       })
     .catch(error=>{
+      this.loader=false;
       this.deleteMessage = 'Error while deleting record. Please try again!';
     });
   }
@@ -258,6 +259,9 @@ export class WorkersPage {
         let msg = JSON.parse(error._body);
         if(msg){
           this.validEmail = 'Account already exist with this email!';
+          setTimeout(function(){
+              document.getElementById("validEmail").style.display = 'none';
+            },3000);
         }
         this.loader = false;
       }); // end post

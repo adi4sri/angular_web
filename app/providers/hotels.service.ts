@@ -84,7 +84,7 @@ export class HotelsService {
 
   deleteHotels(hotelId) {
     // Dont have the data yet
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       var json = { 
       id: hotelId
       };
@@ -93,6 +93,9 @@ export class HotelsService {
         .map(res => res.json())
         .subscribe(data => {
           resolve(data);
+        },
+        error=>{
+          reject(error);
         });
     });
   }

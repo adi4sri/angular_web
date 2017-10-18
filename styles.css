@@ -320,3 +320,6 @@ height: 100%;
 navbar-fixed-top {
   background-color: #4a4a4a;
 }
+.control-group .form-control{
+  padding:0px 12px!important;
+}
